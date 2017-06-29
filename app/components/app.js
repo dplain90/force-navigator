@@ -83,4 +83,68 @@ class App {
 
   }
 
+  function getCookie(c_name)
+  {
+    var i,x,y,ARRcookies=document.cookie.split(";");
+    for (i=0;i<ARRcookies.length;i++)
+      {
+        x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+        y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+        x=x.replace(/^\s+|\s+$/g,"");
+        if (x==c_name)
+          {
+            return unescape(y);
+          }
+      }
+  }
+  function getServerInstance()
+  {
+    var url = location.origin + "";
+    var urlParseArray = url.split(".");
+    var i;
+    var returnUrl;
+
+    if(url.indexOf("salesforce") != -1)
+      {
+        returnUrl = url.substring(0, url.indexOf("salesforce")) + "salesforce.com";
+        return returnUrl;
+      }
+
+    if(url.indexOf("cloudforce") != -1)
+      {
+        returnUrl = url.substring(0, url.indexOf("cloudforce")) + "cloudforce.com";
+        return returnUrl;
+      }
+
+    if(url.indexOf("visual.force") != -1)
+      {
+        returnUrl = 'https://' + urlParseArray[1] + '';
+        return returnUrl;
+      }
+    return returnUrl;
+  }
+
+  function initShortcuts() {
+
+    chrome.extension.sendMessage({'action':'Get Settings'},
+      function(response) {
+
+        shortcut = response['shortcut'];
+        bindShortcut(shortcut);
+      }
+    );
+
+    // chrome.storage.local.get('settings', function(results) {
+    //     if(typeof results.settings.shortcut === 'undefined')
+    //     {
+    //         shortcut = 'shift+space';
+    //         bindShortcut(shortcut);
+    //     }
+    //     else
+    //     {
+    //         bindShortcut(results.settings.shortcut);
+    //     }
+    // });
+  }
+
 }
