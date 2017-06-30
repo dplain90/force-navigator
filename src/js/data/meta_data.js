@@ -51,50 +51,56 @@ export const METADATA_KEYS = {
   'TEXTAREARICH': ['length', 'visible']
 };
 
-export const fieldNullQty = {
-  'AUTONUMBER': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+export const fieldNullQty = (key, data) => {
+  let { sObjectName, sObjectId, fieldName, dataType, plVal, arrSplit, typeLength } = data;
 
-  'CHECKBOX': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+  let fieldData = {
+    'AUTONUMBER': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
 
-  'CURRENCY': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
+    'CHECKBOX': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
 
-  'DATE':[sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+    'CURRENCY': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
 
-  'DATETIME': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+    'DATE':[sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
 
-  'EMAIL':[sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+    'DATETIME': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
 
-  'FORMULA': [],
+    'EMAIL':[sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
 
-  'GEOLOCATION': [sObjectName, sObjectId, fieldName, dataType, null, null, null, arrSplit[4],null,null,null],
+    'FORMULA': [],
 
-'HIERARCHICALRELATIONSHIP': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
+    'GEOLOCATION': [sObjectName, sObjectId, fieldName, dataType, null, null, null, arrSplit[4],null,null,null],
 
-'LOOKUP': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
+  'HIERARCHICALRELATIONSHIP': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
 
-'MASTERDETAIL': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
+  'LOOKUP': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
 
-'NUMBER': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
+  'MASTERDETAIL': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
 
-'PERCENT': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
+  'NUMBER': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
 
-'PHONE': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+  'PERCENT': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
 
-'PICKLIST': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,plVal,null,null],
+  'PHONE': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
 
-'PICKLISTMS': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,plVal,null,null],
+  'PICKLIST': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,plVal,null,null],
 
-'ROLLUPSUMMARY': [],
+  'PICKLISTMS': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,plVal,null,null],
 
-'TEXT': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,null],
+  'ROLLUPSUMMARY': [],
 
-'TEXTENCRYPTED': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+  'TEXT': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,null],
 
-'TEXTAREA': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,null],
+  'TEXTENCRYPTED': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
 
-'TEXTAREALONG': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,arrSplit[4]],
+  'TEXTAREA': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,null],
 
-'TEXTAREARICH': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,arrSplit[4]],
+  'TEXTAREALONG': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,arrSplit[4]],
 
-'URL': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null]
+  'TEXTAREARICH': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,arrSplit[4]],
+
+  'URL': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null]
+  };
+
+  return fieldData[key];
 };

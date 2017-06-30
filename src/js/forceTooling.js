@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (c) 2011, salesforce.com, inc.
  * All rights reserved.
@@ -31,7 +33,7 @@
  * https://na1.salesforce.com/ or similar) as a remote site - in the admin
  * console, go to Your Name | Setup | Security Controls | Remote Site Settings
  */
-
+import * as $ from './jquery.js';
 var forceTooling = window.forceTooling;
 
 if (forceTooling === undefined) {
@@ -186,7 +188,7 @@ if (forceTooling.CustomFields === undefined) {
 if (forceTooling.Client === undefined) {
   // We use $j rather than $ for jQuery so it works in Visualforce
   if (window.$j === undefined) {
-    $j = $;
+    window.$j = $;
   }
 
   /**
@@ -434,3 +436,5 @@ if (forceTooling.Client === undefined) {
   };
 
 }
+
+export default forceTooling;

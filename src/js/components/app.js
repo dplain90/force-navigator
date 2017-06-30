@@ -4,6 +4,7 @@ import * as APIUtil  from '../util/api_util.js';
 import * as SessionUtil from '../util/session_util.js';
 import ResultContainer from './search/result_container.js';
 import { Mouse } from './mouse_trap.js';
+import forceTooling from '../forceTooling.js';
 
 class App {
   constructor() {

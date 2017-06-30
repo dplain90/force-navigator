@@ -23,6 +23,7 @@ var options = {
   entry: {
     popup: "./src/js/popup.js",
     mousetrap: path.join(__dirname, "src", "js", "mousetrap.min.js")
+
   },
   output: {
     path: path.join(__dirname, "build"),
