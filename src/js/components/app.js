@@ -1,5 +1,5 @@
 import { getServerURL } from '../helpers/parser.js';
-import { store } from '../store/store.js';
+import { store } from '../main.js';
 import * as APIUtil  from '../util/api_util.js';
 import * as SessionUtil from '../util/session_util.js';
 import ResultContainer from './search/result_container.js';
@@ -8,17 +8,17 @@ import { Mousetrap } from './mouse_trap.js';
 class App {
   constructor() {
     let sid = SessionUtil.getCookie('sid')
-    let invalidCkie = sid.split('!').length !== 2)
+    // let invalidCkie = sid.split('!').length !== 2)
     this.store = store;
     this.init = this.init.bind(this);
-    this.setDefaultSession = APIUtil.setDefaultSession;
+    this.setDefaultSession = SessionUtil.setDefaultSession;
     this.serverURL = getServerURL();
     this.setupSearchBox = this.setupSearchBox.bind(this);
     this.kbdCommand = this.kbdCommand.bind(this);
     this.initShortcuts = this.initShortcuts.bind(this);
     this.bindShortcut = this.bindShortcut.bind(this);
     this.escCallback = this.escCallback.bind(this);
-    if(this.serverURL && sid && !invalidCkie) this.init();
+    // if(this.serverURL && sid && !invalidCkie) this.init();
   }
 
   setupSearchBox(){
@@ -48,7 +48,7 @@ class App {
     this.setupSearchBox();
     this.resultContainer = new ResultContainer();
     loader.hide();
-    this.omnomnom = APIUtil.getCookie('sid');
+    this.omnomnom = SessionUtil.getCookie('sid');
     APIUtil.getAllData();
     this.search = new Search(this.resultContainer);
     this.nav = new Nav();

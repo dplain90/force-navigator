@@ -1,4 +1,4 @@
-import { store } from '../store/store';
+import { store } from '../main.js';
 
 export const getServerURL = () => {
   let url = location.origin + "";

@@ -98,5 +98,3 @@ export const fieldNullQty = {
 
 'URL': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null]
 };
-
-export const 

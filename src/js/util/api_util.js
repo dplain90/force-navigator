@@ -1,5 +1,5 @@
 import * as Parse from '../helpers/parser.js';
-import { store } from '../store/store.js';
+import { store } from '../main.js';
 import { getCookie } from './session_util.js';
 
 const serverUrl = (ending) => `${getServerURL()}${ending}`;

@@ -1,4 +1,4 @@
-import { store } from '../store/store.js'
+import { store } from '../main.js';
 import { getServerURL } from '../helpers/parser.js';
 export const getCookie = (c_name) =>
 {

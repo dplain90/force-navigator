@@ -1,3 +1,5 @@
+import Nav from '../nav.js'
+import { store } from '../../main.js';
 class ResultContainer extends Nav {
   constructor() {
     super();
@@ -46,21 +48,21 @@ class ResultContainer extends Nav {
           firstChild = this.domeEl.childNodes[posi].firstChild.nodeValue;
         } else {
           firstChild = null;
-        if (posi >= 0) {
-          this.domEl.childNodes[posi + (direction == 'down' ? -1 : 1) ].classList.remove('sfnav_selected');
-          this.domEl.childNodes[posi].classList.add('sfnav_selected');
-          this.domEl.childNodes[posi].scrollIntoViewIfNeeded();
-          textfield.value = firstChild;
-          return false
-          //if(textfield.value.indexOf('<') != -1 && textfield.value.indexOf('>') != -1) {
-            //textfield.setSelectionRange(textfield.value.indexOf('<'), textfield.value.length);
-            //textfield.focus();
-           // return false;
-          //}
+          if (posi >= 0) {
+            this.domEl.childNodes[posi + (direction == 'down' ? -1 : 1) ].classList.remove('sfnav_selected');
+            this.domEl.childNodes[posi].classList.add('sfnav_selected');
+            this.domEl.childNodes[posi].scrollIntoViewIfNeeded();
+            textfield.value = firstChild;
+            return false
+            //if(textfield.value.indexOf('<') != -1 && textfield.value.indexOf('>') != -1) {
+              //textfield.setSelectionRange(textfield.value.indexOf('<'), textfield.value.length);
+              //textfield.focus();
+             // return false;
+            //}
+          }
         }
       }
     }
   }
 }
-
 export default ResultContainer;
