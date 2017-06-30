@@ -50,7 +50,7 @@ class App {
     loader.hide();
     this.omnomnom = APIUtil.getCookie('sid');
     APIUtil.getAllData();
-    this.search = new Search();
+    this.search = new Search(this.resultContainer);
     this.nav = new Nav();
     this.initShortcuts();
   }

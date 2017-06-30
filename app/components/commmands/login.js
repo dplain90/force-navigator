@@ -1,3 +1,5 @@
+import Command from './command.js';
+
 class Login extends Command {
   constructor(results) {
     super(results);
@@ -18,6 +20,6 @@ class Login extends Command {
     return loginLocation;
   }
 
-
-
 }
+
+export default Login;

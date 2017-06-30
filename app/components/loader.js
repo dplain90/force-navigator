@@ -12,3 +12,5 @@ class Loader extends Nav {
     setTimeout(() => (that.domEl.setVisibility('hidden')), 30000);
   }
 }
+
+export default Loader;

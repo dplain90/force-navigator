@@ -1,3 +1,5 @@
+import Command from './command.js';
+
 class Field extends Command {
   constructor(results, cmd){
     super(results);
@@ -202,8 +204,6 @@ class Field extends Command {
       }
 
   }
-
-
-
-
 }
+
+export default Field;

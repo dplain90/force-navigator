@@ -4,10 +4,7 @@ class Command {
   constructor(results) {
     this.errorEl = errorEl;
     this.results = results;
-
   }
-
-
 
   createErrorDOM(err, txt) {
     err.appendChild(document.createTextNode(txt));
@@ -33,3 +30,4 @@ class Command {
     this.results.setVisible("visible", mainNav);
   }
 }
+export default Command;

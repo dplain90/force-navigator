@@ -1,9 +1,10 @@
-import { META_DATATYPES } from '../data/meta_data.js';
+import { META_DATATYPES, METADATA_KEYS } from '../data/meta_data.js';
 
 class Store {
   constructor() {
     this.data = {};
     this.data['META_DATATYPES'] = META_DATATYPES;
+    this.data['METADATA_KEYS'] = METADATA_KEYS;
     this.data['SFAPI_VERSION'] = 'v33.0';
     this.data['loader_url'] = chrome.extension.getURL("images/ajax-loader.gif");
     this.data['logo_url'] = chrome.extension.getURL("images/128.png");

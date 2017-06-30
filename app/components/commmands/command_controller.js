@@ -1,5 +1,8 @@
 
 import * as APIUtil from '../../util/api_util.js';
+import Login from './login.js';
+import Field from './field.js';
+import { store } from '../../store/store.js';
 
 export const handleCommand = (cmd, results) => {
     let c = cmd.toLowerCase();
@@ -25,7 +28,7 @@ export const handleCommand = (cmd, results) => {
   };
 
 
-function handleURL(cmd, newtab, evt) {
+export const handleURL = (cmd, newtab, evt) => {
   if(evt !== 'click' && cmd && cmd.url !== (null || '')) {
     if(newtab) {
       let w = window.open(cmd.url, '_newtab');
@@ -35,7 +38,7 @@ function handleURL(cmd, newtab, evt) {
       window.location.href = cmd.url;
     }
   }
-}
+};
 
 export const invokeCommand = (key, newtab, evt, results) => {
   let cmd = store.get('cmds')[key];

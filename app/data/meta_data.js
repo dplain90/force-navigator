@@ -23,3 +23,30 @@ export const META_DATATYPES = {
   "TEXTAREARICH": {name:"Html",code:"tar"},
   "URL": {name:"Url",code:"url"}
 };
+
+export const METADATA_KEYS = {
+  'AUTONUMBER': [],
+  'CHECKBOX': [],
+  'CURRENCY': [],
+  'DATE': [],
+  'DATETIME': [],
+  'EMAIL': [],
+  'PHONE': [],
+  'PICKLIST': [],
+  'PICKLISTMS': [],
+  'URL': [],
+  'CURRENCY': ['scale','precision'],
+  'FORMULA': null, // was empty
+  'GEOLOCATION': ['scale'],
+  'HIERARCHICALRELATIONSHIP': null, // was empty
+  'LOOKUP': ['lookupObj'],
+  'MASTERDETAIL': null, // was empty
+  'NUMBER': ['scale', 'precision'],
+  'PERCENT': ['scale', 'precision'],
+  'ROLLUPSUMMARY': null, // was empty
+  'TEXT': ['length'],
+  'TEXTENCRYPTED': null, // was empty
+  'TEXTAREA': ['length'],
+  'TEXTAREALONG': ['length', 'visible'],
+  'TEXTAREARICH': ['length', 'visible']
+};
