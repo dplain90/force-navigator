@@ -11,9 +11,9 @@ class Nav {
     return this.visibility !== 'hidden';
   }
 
-  setVisibility(val) {
-    this.domEl.style.position = 'relative';
-    this.domEl.style.visibility = val;
+  setVisibility(val, el = this.domEl) {
+    el.style.position = 'relative';
+    el.style.visibility = val;
   }
 }
 

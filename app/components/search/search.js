@@ -40,6 +40,15 @@ class Search extends Nav {
 
 
 
+  clearOutput(){
+    if(typeof outp != 'undefined')
+      {
+        while (outp.hasChildNodes()){
+          noten=outp.firstChild;
+          outp.removeChild(noten);
+        }
+      }
+  }
 
 
   addElements(ins)

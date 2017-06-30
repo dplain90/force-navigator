@@ -1,4 +1,4 @@
-class SearchEntry {
+class SearchResult {
   constructor(cmd, word) {
     this.cmd = cmd;
     this.word = word;
@@ -11,7 +11,6 @@ class SearchEntry {
     this.createEl = this.createEl.bind(this);
     this.setId = this.setId.bind(this);
     this.mouseClickLoginAs = this.mouseClickLoginAs.bind(this);
-    this.outp = document.getElementById("sfnav_output");
     this.domEl = document.createElement("div");
     this.setup();
   }
@@ -20,7 +19,6 @@ class SearchEntry {
     this.createEl();
     this.setId();
     this.setListeners();
-
   }
 
   setListeners() {
@@ -89,4 +87,4 @@ class SearchEntry {
 
 }
 
-export default SearchEntry;
+export default SearchResult;
