@@ -3,7 +3,7 @@ import { store } from '../main.js';
 import * as APIUtil  from '../util/api_util.js';
 import * as SessionUtil from '../util/session_util.js';
 import ResultContainer from './search/result_container.js';
-import { Mousetrap } from './mouse_trap.js';
+import { Mouse } from './mouse_trap.js';
 
 class App {
   constructor() {

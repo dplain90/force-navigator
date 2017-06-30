@@ -15,7 +15,6 @@ if (fileSystem.existsSync(secretsPath)) {
 }
 // popup: path.join(__dirname, "src", "js", "popup.js"),
 // options: path.join(__dirname, "src", "js", "options.js"),
-// background: path.join(__dirname, "src", "js", "background.js")
 
 var options = {
   chromeExtensionBoilerplate: {
@@ -23,6 +22,7 @@ var options = {
   },
   entry: {
     popup: "./src/js/popup.js",
+    mousetrap: path.join(__dirname, "src", "js", "mousetrap.min.js")
   },
   output: {
     path: path.join(__dirname, "build"),

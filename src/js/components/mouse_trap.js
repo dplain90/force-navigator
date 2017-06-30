@@ -1,6 +1,9 @@
-export const Mousetrap = (function(Mousetrap) {
-  var _global_callbacks = {},
-    _original_stop_callback = Mousetrap.stopCallback;
+import * as Mousetrap from '../mousetrap.min.js';
+const original = Mousetrap.stopCallback;
+
+const m = function() {
+  let _global_callbacks = {};
+  let _original_stop_callback = original;
 
   Mousetrap.stopCallback = function(e, element, combo) {
     if (_global_callbacks[combo]) {
@@ -24,4 +27,6 @@ export const Mousetrap = (function(Mousetrap) {
   };
 
   return Mousetrap;
-}) (Mousetrap);
+}
+
+export const Mouse = m();

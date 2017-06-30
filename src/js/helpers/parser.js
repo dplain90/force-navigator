@@ -80,7 +80,6 @@ export const parseSetupTree = (html) => {
     let strName;
     let as;
     let strNameMain;
-    let strName;
     [].map.call(all, function(item) {
       let hasTopParent = false, hasParent = false;
       let parent, topParent;
