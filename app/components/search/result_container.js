@@ -58,3 +58,5 @@ class ResultContainer extends Nav {
   }
 
 }
+
+export default ResultContainer;

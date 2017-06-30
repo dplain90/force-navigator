@@ -1,6 +1,9 @@
 
 import SearchEntry from './search_entry.js';
 import Nav from './nav.js';
+import { store } from '../../store/store.js';
+
+
 let METADATA_KEYS = {
   'AUTONUMBER': [],
   'CHECKBOX': [],
@@ -36,6 +39,16 @@ class Search extends Nav {
     this.searchBox = document.getElementById("sfnav_search_box");
     this.handleChange = this.handleChange.bind(this);
     this.domEl.oninput = this.handleChange;
+
+    this.searchBox.innerHTML = `
+    <div class="sfnav_wrapper">
+      <input type="text" id="sfnav_quickSearch" autocomplete="off"/>
+      <img id="sfnav_loader" src= "${loaderURL}"/>
+      <img id="sfnav_logo" src= "${logoURL}"/>
+    </div>
+    <div class="sfnav_shadow" id="sfnav_shadow"/>
+    <div class="sfnav_output" id="sfnav_output"/>`;
+
   }
 
 

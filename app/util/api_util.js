@@ -1,7 +1,6 @@
 import { getServerURL } from '../helpers/parser.js';
-
-const SFAPI_VERSION = 'v33.0';
-
+import { store } from '../store/store.js';
+import { getCookie } from './session_util.js';
 export const httpGet =  (url, callback) =>
 {
   let xhr = new XMLHttpRequest();
@@ -19,7 +18,7 @@ export const getMetaData = (callback) => {
   if(location.origin.indexOf("visual.force") !== -1) return;
 
   let sid = "Bearer " + getCookie('sid');
-  let url = getServerURL() + '/services/data/' + SFAPI_VERSION + '/sobjects/';
+  let url = getServerURL() + '/services/data/' + store.get('SFAPI_VERSION') + '/sobjects/';
 
   xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
@@ -30,6 +29,41 @@ export const getMetaData = (callback) => {
   }
   xhr.send();
 };
+
+export const getAllMetaData = (callback) => {
+  let omnomnom = getCookie('sid');
+  let clientId = omnomnom.split('!')[0];
+  let hash = clientId + '!' + omnomnom.substring(omnomnom.length - 10, omnomnom.length);
+  // chrome.storage.local.get(['Commands','Metadata'], function(results) {
+  //     console.log(results);
+  // });
+  chrome.extension.sendMessage({
+    action:'Get Commands', 'key': hash},
+    function(response) {
+      cmds = response;
+      if(cmds == null || cmds.length == 0) {
+        cmds = {};
+        metaData = {};
+        getMetaData(callback);
+      } else {
+      }
+    });
+};
+
+
+export const getCustomObjects = () =>
+{
+  let url = getServerURL() + '/p/setup/custent/CustomObjectsPage';
+  let xhr = new XMLHttpRequest();
+  xhr.onload = function() {
+    parseCustomObjectTree(this.response);
+  }
+  xhr.open("GET", url);
+  xhr.responseType = 'document';
+
+  xhr.send();
+};
+
 
 
 export const login = (id) => {

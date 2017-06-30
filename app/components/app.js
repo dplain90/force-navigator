@@ -1,8 +1,54 @@
+import { getServerURL } from '../helpers/parser.js';
+import { store } from '../store/store.js';
+import * as APIUtil  from '../util/session_util.js';
+import { parseMetaData } from '../helpers/parser.js';
+import ResultContainer from './search/result_container.js';
+
 class App {
   constructor() {
+    let invalidCkie = getCookie('sid').split('!').length != 2)
+    this.store = store;
+    this.init = this.init.bind(this);
+    this.setDefaultSession = APIUtil.setDefaultSession;
+    this.serverURL = getServerURL();
+    this.setupSearchBox = this.setupSearchBox.bind(this);
+    if(this.serverURL || getCookie('sid') && !invalidCkie) this.init();
+  }
+
+  setupSearchBox(){
+    let loaderURL = this.store.get('loader_url');
+    let logoURL = this.store.get('logo_url');
+    let searchBox = document.createElement('div');
+    searchBox.setAttribute('id', 'sfnav_search_box');
+    searchBox.innerHTML = `
+    <div class="sfnav_wrapper">
+      <input type="text" id="sfnav_quickSearch" autocomplete="off"/>
+      <img id="sfnav_loader" src= "${loaderURL}"/>
+      <img id="sfnav_logo" src= "${logoURL}"/>
+    </div>
+    <div class="sfnav_shadow" id="sfnav_shadow"/>
+    <div class="sfnav_output" id="sfnav_output"/>`;
+
+    document.body.appendChild(searchBox);
+  }
+
+  init() {
+    let ftClient = new forceTooling.Client();
+    this.store.add('ft-cli', ftClient);
+    this.setDefaultSession();
+    this.setupSearchBox();
+    this.resultContainer = new ResultContainer();
+    hideLoadingIndicator();
+    this.initShortcuts();
+    this.omnomnom = APIUtil.getCookie('sid');
 
 
   }
+
+
+
+
+
 
   getMetadata(_data) {
     if(_data.length == 0) return;
@@ -40,23 +86,7 @@ class App {
     // store('Store Metadata', metaData)
   }
 
-  store(action, payload) {
 
-    var req = {}
-    req.action = action;
-    req.key = hash;
-    req.payload = payload;
-
-    chrome.extension.sendMessage(req, function(response) {
-
-    });
-
-    // var storagePayload = {};
-    // storagePayload[action] = payload;
-    // chrome.storage.local.set(storagePayload, function() {
-    //     console.log('stored');
-    // });
-  }
 
   getAllObjectMetadata() {
 
@@ -83,49 +113,8 @@ class App {
 
   }
 
-  function getCookie(c_name)
-  {
-    var i,x,y,ARRcookies=document.cookie.split(";");
-    for (i=0;i<ARRcookies.length;i++)
-      {
-        x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
-        y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
-        x=x.replace(/^\s+|\s+$/g,"");
-        if (x==c_name)
-          {
-            return unescape(y);
-          }
-      }
-  }
-  function getServerInstance()
-  {
-    var url = location.origin + "";
-    var urlParseArray = url.split(".");
-    var i;
-    var returnUrl;
 
-    if(url.indexOf("salesforce") != -1)
-      {
-        returnUrl = url.substring(0, url.indexOf("salesforce")) + "salesforce.com";
-        return returnUrl;
-      }
-
-    if(url.indexOf("cloudforce") != -1)
-      {
-        returnUrl = url.substring(0, url.indexOf("cloudforce")) + "cloudforce.com";
-        return returnUrl;
-      }
-
-    if(url.indexOf("visual.force") != -1)
-      {
-        returnUrl = 'https://' + urlParseArray[1] + '';
-        return returnUrl;
-      }
-    return returnUrl;
-  }
-
-  function initShortcuts() {
-
+  initShortcuts() {
     chrome.extension.sendMessage({'action':'Get Settings'},
       function(response) {
 
@@ -133,7 +122,6 @@ class App {
         bindShortcut(shortcut);
       }
     );
-
     // chrome.storage.local.get('settings', function(results) {
     //     if(typeof results.settings.shortcut === 'undefined')
     //     {
