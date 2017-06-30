@@ -54,7 +54,7 @@ class SearchResult {
       oldins = this.firstChild.nodeValue;
       setVisibleSearch("hidden");
       setVisible("hidden");
-      invokeCommand(this.firstChild.nodeValue,false,'click');
+      invokeCommand(this.firstChild.nodeValue, false, 'click');
       return true;
   }
 

@@ -8,7 +8,7 @@ import { Mousetrap } from './mouse_trap.js';
 class App {
   constructor() {
     let sid = SessionUtil.getCookie('sid')
-    let invalidCkie = sid.split('!').length != 2)
+    let invalidCkie = sid.split('!').length !== 2)
     this.store = store;
     this.init = this.init.bind(this);
     this.setDefaultSession = APIUtil.setDefaultSession;
