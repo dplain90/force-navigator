@@ -1,9 +1,11 @@
 import Command from './command.js';
+import { store } from '../../store/store.js';
 
 class Field extends Command {
   constructor(results, cmd){
     super(results);
     this.cmd = cmd;
+    this.store = store;
     this.createField = this.createField.bind(this);
     this.updateField = this.updateField.bind(this);
     this.createField();
@@ -11,13 +13,15 @@ class Field extends Command {
 
   function updateField(cmd)
   {
-    var arrSplit = cmd.split(' ');
-    var dataType = '';
-    var fieldMetadata;
+    let arrSplit = cmd.split(' ');
+    let dataType = '';
+    let fieldMetadata;
+    let META_DATATYPES = this.store.get('META_DATATYPES');
+    let ftClient = this.store.get('ft-cli');
 
     if(arrSplit.length >= 3)
       {
-        for(var key in META_DATATYPES)
+        for(let key in META_DATATYPES)
           {
             if(META_DATATYPES[key].name.toLowerCase() === arrSplit[3].toLowerCase())
               {
@@ -26,11 +30,11 @@ class Field extends Command {
               }
           }
 
-        var sObjectName = arrSplit[1];
-        var fieldName = arrSplit[2];
-        var helpText = null;
-        var typeLength = arrSplit[4];
-        var rightDecimals, leftDecimals;
+        let sObjectName = arrSplit[1];
+        let fieldName = arrSplit[2];
+        let helpText = null;
+        let typeLength = arrSplit[4];
+        let rightDecimals, leftDecimals;
         if(parseInt(arrSplit[5]) != NaN )
           {
             rightDecimals = parseInt(arrSplit[5]);
@@ -41,9 +45,6 @@ class Field extends Command {
             leftDecimals = 0;
             rightDecimals = 0;
           }
-
-
-
 
         ftClient.queryByName('CustomField', fieldName, sObjectName, function(success) {
           addSuccess(success);
@@ -68,6 +69,12 @@ class Field extends Command {
       }
   }
 
+  createForceField(options){ // pew pew
+
+
+    new forceTooling.CustomFields.CustomField
+
+  }
   createField(cmd) {
     var arrSplit = cmd.split(' ');
     var dataType = '';

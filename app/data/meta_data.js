@@ -50,3 +50,51 @@ export const METADATA_KEYS = {
   'TEXTAREALONG': ['length', 'visible'],
   'TEXTAREARICH': ['length', 'visible']
 };
+
+export const fieldNullQty = {
+  'AUTONUMBER': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+
+  'CHECKBOX': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+
+  'CURRENCY': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
+
+  'DATE':[sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+
+  'DATETIME': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+
+  'EMAIL':[sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+
+  'FORMULA': [],
+
+  'GEOLOCATION': [sObjectName, sObjectId, fieldName, dataType, null, null, null, arrSplit[4],null,null,null],
+
+'HIERARCHICALRELATIONSHIP': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
+
+'LOOKUP': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
+
+'MASTERDETAIL': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,arrSplit[4],null],
+
+'NUMBER': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
+
+'PERCENT': [sObjectName, sObjectId, fieldName, dataType, null, null, leftDecimals, rightDecimals,null,null,null],
+
+'PHONE': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+
+'PICKLIST': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,plVal,null,null],
+
+'PICKLISTMS': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,plVal,null,null],
+
+'ROLLUPSUMMARY': [],
+
+'TEXT': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,null],
+
+'TEXTENCRYPTED': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null],
+
+'TEXTAREA': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,null],
+
+'TEXTAREALONG': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,arrSplit[4]],
+
+'TEXTAREARICH': [sObjectName, sObjectId, fieldName, dataType, null, typeLength, null,null,null,null,arrSplit[4]],
+
+'URL': [sObjectName, sObjectId, fieldName, dataType, null, null, null,null,null,null,null]
+};
