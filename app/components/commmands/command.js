@@ -1,14 +1,18 @@
 import { handleURL, handleCommand } from './command_controller';
 
 class Command {
-  constructor(results, cmds) {
+  constructor(results) {
     this.errorEl = errorEl;
     this.results = results;
     this.cmds = cmds;
   }
 
+  getCmds(key){
+    
+  }
+
   invokeCommand(key, newtab, evt) {
-    let cmd = this.cmds[key];
+    let cmd = this.getCmds(key);
     handleURL(cmd, newtab, evt);
     handleCommand(cmd, this.results);
   }

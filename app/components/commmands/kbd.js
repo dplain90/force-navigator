@@ -12,7 +12,6 @@ class Kbd extends Command {
   if(typeof outp.childNodes[position] != 'undefined')
     {
       newText = outp.childNodes[position].firstChild.nodeValue;
-
     }
 
   var newtab = newTabKeys.indexOf(key) >= 0 ? true : false;

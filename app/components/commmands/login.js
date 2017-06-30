@@ -12,22 +12,7 @@ class Login extends Command {
     setVisible('visible');
   }
 
-  function loginAsPerform(userId) {
-    xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-      if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-        document.write(xmlhttp.responseText );
-        document.close();
-        setTimeout(function() {
-          document.getElementsByName("login")[0].click();
-        }, 1000);
-      }
-    }
-    xmlhttp.open("GET", userDetailPage(userId), true);
-    xmlhttp.send();
-  }
-
-  function userDetailPage(userId) {
+ userDetailPage(userId) {
     var loginLocation = window.location.protocol + '//' + window.location.host + '/' + userId + '?noredirect=1';
     console.log(loginLocation);
     return loginLocation;

@@ -1,8 +1,6 @@
 
 import * as APIUtil from '../../util/api_util.js';
 
-
-
 export const handleCommand = (cmd, results) => {
     let c = cmd.toLowerCase();
     switch(c) {
@@ -20,7 +18,6 @@ export const handleCommand = (cmd, results) => {
         break;
     }
   };
-
 
 
 function handleURL(cmd, newtab, evt) {

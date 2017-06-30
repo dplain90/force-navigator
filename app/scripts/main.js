@@ -664,11 +664,7 @@ var sfnav = (function() {
 
   function getAllObjectMetadata() {
 
-    // session ID is different and useless in VF
-    if(location.origin.indexOf("visual.force") !== -1) return;
 
-    sid = "Bearer " + getCookie('sid');
-    var theurl = getServerInstance() + '/services/data/' + SFAPI_VERSION + '/sobjects/';
 
     cmds['Refresh Metadata'] = {};
     cmds['Setup'] = {};
