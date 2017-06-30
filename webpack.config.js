@@ -13,12 +13,16 @@ var secretsPath = path.join(__dirname, ("secrets." + env.NODE_ENV + ".js"));
 if (fileSystem.existsSync(secretsPath)) {
   alias["secrets"] = secretsPath;
 }
+// popup: path.join(__dirname, "src", "js", "popup.js"),
+// options: path.join(__dirname, "src", "js", "options.js"),
+// background: path.join(__dirname, "src", "js", "background.js")
 
 var options = {
+  chromeExtensionBoilerplate: {
+    notHotReload: ["popup"]
+  },
   entry: {
-    popup: path.join(__dirname, "src", "js", "popup.js"),
-    options: path.join(__dirname, "src", "js", "options.js"),
-    background: path.join(__dirname, "src", "js", "background.js")
+    popup: "./src/js/popup.js",
   },
   output: {
     path: path.join(__dirname, "build"),
@@ -27,6 +31,9 @@ var options = {
   module: {
     rules: [
       { test: /\.css$/, loader: "style-loader!css-loader", exclude: /node_modules/  }
+    ],
+    loaders: [
+      {test: /\.(jpe?g|png|gif|svg)$/i, loader: "file-loader?name=/images/[name].[ext]"}
     ]
   },
   resolve: {

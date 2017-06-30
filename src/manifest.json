@@ -2,27 +2,21 @@
     "name": "Salesforce Navigator",
     "version": "0.8.3",
     "manifest_version": 2,
-    "default_locale": "en",
     "browser_action": {
-        "default_icon": "images/38-white.png",
-        "default_popup": "popup.html"
-    },
-    "background": {
-        "scripts": [
-            "js/background.js"
-        ],
-        "persistent": true
+        "default_popup": "popup.html",
+        "default_icon": "images/38-white.png"
     },
     "icons": {
         "128": "images/128-white.png"
     },
     "web_accessible_resources": [
-        "images/ajax-loader.gif",
-        "images/128.png"
-    ],
+       "images/ajax-loader.gif",
+       "images/128.png"
+   ],
     "description": "",
     "content_scripts": [
         {
+          "js": ["popup.bundle.js"],
             "matches": [
                 "https://*.force.com/*",
                 "https://*.salesforce.com/*",
