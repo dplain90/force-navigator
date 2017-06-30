@@ -147,4 +147,28 @@ class App {
     // });
   }
 
+  function bindShortcut(shortcut) {
+
+    let searchBar = document.getElementById('sfnav_quickSearch');
+
+    Mousetrap.bindGlobal(shortcut, function(e) {
+      setVisibleSearch("visible");
+      return false;
+    });
+
+    Mousetrap.bindGlobal('esc', function(e) {
+
+      if (isVisible() || isVisibleSearch()) {
+
+        searchBar.blur();
+        clearOutput();
+        searchBar.value = '';
+
+        setVisible("hidden");
+        setVisibleSearch("hidden");
+
+      }
+
+    });
+
 }

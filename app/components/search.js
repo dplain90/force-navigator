@@ -1,6 +1,6 @@
 
-import SearchEntry from './search_entry.js'
-
+import SearchEntry from './search_entry.js';
+import Nav from './nav.js';
 let METADATA_KEYS = {
   'AUTONUMBER': [],
   'CHECKBOX': [],
@@ -29,9 +29,13 @@ let METADATA_KEYS = {
 };
 
 
-class Search {
+class Search extends Nav {
   constructor() {
-
+    super();
+    this.domEl = document.getElementById("sfnav_quickSearch");
+    this.searchBox = document.getElementById("sfnav_search_box");
+    this.handleChange = this.handleChange.bind(this);
+    this.domEl.oninput = this.handleChange;
   }
 
 
@@ -161,5 +165,23 @@ class Search {
       }
       outp.appendChild(sp);
     }
+
+    setVisibility(val) {
+      this.searchBox.style.visibility = val;
+      if(val === 'visible') this.domEl.focus();
+    }
+
+    handleChange(e){
+      let newSearchVal = document.getElementById('sfnav_quickSearch').value
+      if (newSearchVal !== '') {
+        addElements(newSearchVal);
+      }
+      else{
+        document.querySelector('#sfnav_output').innerHTML = '';
+        setVisible("hidden");
+        posi = -1;
+      }
+    }
+
 
 }

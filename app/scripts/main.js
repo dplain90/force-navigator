@@ -123,7 +123,7 @@ var sfnav = (function() {
     var keyPrefix = recordId.substring(0,3);
 
   }
-  
+
 
   function httpGet(url, callback)
   {
