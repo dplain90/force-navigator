@@ -1,6 +1,9 @@
-import { getServerURL } from '../helpers/parser.js';
+import * as Parse from '../helpers/parser.js';
 import { store } from '../store/store.js';
 import { getCookie } from './session_util.js';
+
+const serverUrl = (ending) => `${getServerURL()}${ending}`;
+
 export const httpGet =  (url, callback) =>
 {
   let xhr = new XMLHttpRequest();
@@ -18,7 +21,8 @@ export const getMetaData = (callback) => {
   if(location.origin.indexOf("visual.force") !== -1) return;
 
   let sid = "Bearer " + getCookie('sid');
-  let url = getServerURL() + '/services/data/' + store.get('SFAPI_VERSION') + '/sobjects/';
+  let ending = `/services/data/${store.get('SFAPI_VERSION')}/sobjects/`;
+  let url = serverURL(ending);
 
   xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
@@ -30,7 +34,7 @@ export const getMetaData = (callback) => {
   xhr.send();
 };
 
-export const getAllMetaData = (callback) => {
+export const getAllMetaData = () => {
   let omnomnom = getCookie('sid');
   let clientId = omnomnom.split('!')[0];
   let hash = clientId + '!' + omnomnom.substring(omnomnom.length - 10, omnomnom.length);
@@ -44,7 +48,7 @@ export const getAllMetaData = (callback) => {
       if(cmds == null || cmds.length == 0) {
         cmds = {};
         metaData = {};
-        getMetaData(callback);
+        getMetaData(Parse.parseMetaData);
       } else {
       }
     });
@@ -53,7 +57,7 @@ export const getAllMetaData = (callback) => {
 
 export const getCustomObjects = () =>
 {
-  let url = getServerURL() + '/p/setup/custent/CustomObjectsPage';
+  let url = serverURL('/p/setup/custent/CustomObjectsPage');
   let xhr = new XMLHttpRequest();
   xhr.onload = function() {
     parseCustomObjectTree(this.response);
@@ -64,7 +68,19 @@ export const getCustomObjects = () =>
   xhr.send();
 };
 
+export const getSetupTree = () => {
+  let loader = store.get('loader');
+  let url = serverURL('/ui/setup/Setup');
+  let xhr = new XMLHttpRequest();
+  xhr.onload = function() {
+    Parse.parseSetupTree(this.response);
+    loader.hide();
+  }
+  xhr.open("GET", url);
+  xhr.responseType = 'document';
 
+  xhr.send();
+};
 
 export const login = (id) => {
   xhr = new XMLHttpRequest();
@@ -80,3 +96,9 @@ export const login = (id) => {
   xhr.open("GET", userDetailPage(id), true);
   xhr.send();
 };
+
+export const getAllData = () => {
+  getAllMetaData();
+  getSetupTree();
+  getCustomObjects();
+}

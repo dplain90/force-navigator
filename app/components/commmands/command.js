@@ -4,18 +4,10 @@ class Command {
   constructor(results) {
     this.errorEl = errorEl;
     this.results = results;
-    this.cmds = cmds;
+
   }
 
-  getCmds(key){
-    
-  }
 
-  invokeCommand(key, newtab, evt) {
-    let cmd = this.getCmds(key);
-    handleURL(cmd, newtab, evt);
-    handleCommand(cmd, this.results);
-  }
 
   createErrorDOM(err, txt) {
     err.appendChild(document.createTextNode(txt));

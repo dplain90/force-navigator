@@ -5,7 +5,7 @@ export const handleCommand = (cmd, results) => {
     let c = cmd.toLowerCase();
     switch(c) {
       case 'refresh metadata':
-        let loader = new Loader();
+        let loader = store.get('loader');
         loader.show();
         APIUtil.getAllObjectMetadata();
         break;
@@ -13,8 +13,13 @@ export const handleCommand = (cmd, results) => {
         window.location.href = serverInstance + '/ui/setup/Setup';
         break;
       default:
-        if(c.substring(0,3) === 'cf ') new Field(results, cmd);
-        if(c.substring(0,9) == 'login as ') new Login(results, cmd);
+        if(c.substring(0,3) === 'cf ') {
+          new Field(results, cmd);
+        } else if(c.substring(0,9) == 'login as ') {
+          new Login(results, cmd);
+        } else {
+          return false;
+        }
         break;
     }
   };
@@ -30,4 +35,11 @@ function handleURL(cmd, newtab, evt) {
       window.location.href = cmd.url;
     }
   }
+}
+
+export const invokeCommand = (key, newtab, evt, results) => {
+  let cmd = store.get('cmds')[key];
+  handleURL(cmd, newtab, evt);
+  let outcome = handleCommand(cmd, results);
+  if(!outcome) return false;
 }

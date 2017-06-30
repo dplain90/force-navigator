@@ -1,18 +1,24 @@
 import { getServerURL } from '../helpers/parser.js';
 import { store } from '../store/store.js';
-import * as APIUtil  from '../util/session_util.js';
-import { parseMetaData } from '../helpers/parser.js';
+import * as APIUtil  from '../util/api_util.js';
+import * as SessionUtil from '../util/session_util.js';
 import ResultContainer from './search/result_container.js';
+import { Mousetrap } from './mouse_trap.js';
 
 class App {
   constructor() {
-    let invalidCkie = getCookie('sid').split('!').length != 2)
+    let sid = SessionUtil.getCookie('sid')
+    let invalidCkie = sid.split('!').length != 2)
     this.store = store;
     this.init = this.init.bind(this);
     this.setDefaultSession = APIUtil.setDefaultSession;
     this.serverURL = getServerURL();
     this.setupSearchBox = this.setupSearchBox.bind(this);
-    if(this.serverURL || getCookie('sid') && !invalidCkie) this.init();
+    this.kbdCommand = this.kbdCommand.bind(this);
+    this.initShortcuts = this.initShortcuts.bind(this);
+    this.bindShortcut = this.bindShortcut.bind(this);
+    this.escCallback = this.escCallback.bind(this);
+    if(this.serverURL && sid && !invalidCkie) this.init();
   }
 
   setupSearchBox(){
@@ -34,91 +40,25 @@ class App {
 
   init() {
     let ftClient = new forceTooling.Client();
+    let loader = new Loader();
     this.store.add('ft-cli', ftClient);
+    this.store.add('loader', loader);
+    this.kbdCommand = this.kbdCommand.bind(this);
     this.setDefaultSession();
     this.setupSearchBox();
     this.resultContainer = new ResultContainer();
-    hideLoadingIndicator();
-    this.initShortcuts();
+    loader.hide();
     this.omnomnom = APIUtil.getCookie('sid');
-
-
+    APIUtil.getAllData();
+    this.search = new Search();
+    this.nav = new Nav();
+    this.initShortcuts();
   }
-
-
-
-
-
-
-  getMetadata(_data) {
-    if(_data.length == 0) return;
-    var metadata = JSON.parse(_data);
-
-    var mRecord = {};
-    var act = {};
-    metaData = {};
-    metadata.sobjects.map( obj => {
-
-      if(obj.keyPrefix != null) {
-        mRecord = {label, labelPlural, keyPrefix, urls} = obj;
-        metaData[obj.keyPrefix] = mRecord;
-
-        act = {
-          key: obj.name,
-          keyPrefix: obj.keyPrefix,
-          url: serverInstance + '/' + obj.keyPrefix
-        }
-        cmds['List ' + mRecord.labelPlural] = act;
-        cmds['List ' + mRecord.labelPlural]['synonyms'] = [obj.name];
-
-        act = {
-          key: obj.name,
-          keyPrefix: obj.keyPrefix,
-          url: serverInstance + '/' + obj.keyPrefix + '/e',
-        }
-        cmds['New ' + mRecord.label] = act;
-        cmds['New ' + mRecord.label]['synonyms'] = [obj.name];
-
-      }
-    })
-
-    store('Store Commands', cmds);
-    // store('Store Metadata', metaData)
-  }
-
-
-
-  getAllObjectMetadata() {
-
-    // session ID is different and useless in VF
-    if(location.origin.indexOf("visual.force") !== -1) return;
-
-    sid = "Bearer " + getCookie('sid');
-    var theurl = getServerInstance() + '/services/data/' + SFAPI_VERSION + '/sobjects/';
-
-    cmds['Refresh Metadata'] = {};
-    cmds['Setup'] = {};
-    var req = new XMLHttpRequest();
-    req.open("GET", theurl, true);
-    req.setRequestHeader("Authorization", sid);
-    req.onload = function(response) {
-      getMetadata(response.target.responseText);
-
-    }
-    req.send();
-
-    getSetupTree();
-    // getCustomObjects();
-    getCustomObjectsDef();
-
-  }
-
 
   initShortcuts() {
     chrome.extension.sendMessage({'action':'Get Settings'},
       function(response) {
-
-        shortcut = response['shortcut'];
+        let shortcut = response['shortcut'];
         bindShortcut(shortcut);
       }
     );
@@ -135,28 +75,70 @@ class App {
     // });
   }
 
-  function bindShortcut(shortcut) {
+  escCallback(e){
+    if (this.search.isVisible() || this.nav.isVisible()) {
+      this.resultContainer.clearOutput();
+      this.search.domEl.blur();
+      this.search.domEl.value = '';
+      this.nav.setVisible("hidden");
+      this.search.setVisible("hidden");
+    }
+  }
 
-    let searchBar = document.getElementById('sfnav_quickSearch');
+  bindShortcut(shortcut) {
+    let search = this.search;
+    let searchBar = search.domEl;
+    let nav = this.nav;
+    let store = this.store;
 
+    let selectMove = this.resultContainer.selectMove;
     Mousetrap.bindGlobal(shortcut, function(e) {
-      setVisibleSearch("visible");
+      search.setVisibility('visible');
       return false;
     });
 
-    Mousetrap.bindGlobal('esc', function(e) {
+    Mousetrap.bindGlobal('esc', this.escCallback);
 
-      if (isVisible() || isVisibleSearch()) {
+    Mousetrap.wrap(searchBar).bind('enter', this.kbdCommand);
 
-        searchBar.blur();
-        clearOutput();
-        searchBar.value = '';
+    for (var i = 0; i < newTabKeys.length; i++) {
+      Mousetrap.wrap(searchBar).bind(newTabKeys[i], this.kbdCommand);
+    };
 
-        setVisible("hidden");
-        setVisibleSearch("hidden");
+    Mousetrap.wrap(searchBar).bind('down', selectMove.bind(this, 'down'));
 
+    Mousetrap.wrap(searchBar).bind('up', selectMove.bind(this, 'up'));
+
+
+    Mousetrap.wrap(searchBar).bind('backspace', function(e) {
+      store.update('posi', -1);
+      store.update('oldins', -1);
+    });
+  }
+
+  kbdCommand(e, key) {
+    let position = this.store.get('posi');
+    let newText = '';
+    let origText = this.search.domEl.value;
+    let results = this.resultContainer.domEl;
+    let newTabKeys = this.store.get('new_tab_keys');
+    if(position < 0) position = 0;
+
+    if(typeof results.childNodes[position] != 'undefined')
+      {
+        newText = results.childNodes[position].firstChild.nodeValue;
       }
 
-    });
+    let newtab = newTabKeys.indexOf(key) >= 0 ? true : false;
+    if(!newtab){
+      this.resultContainer.clearOutput();
+      this.nav.setVisible("hidden");
+    }
 
+    if(!invokeCommand(newText, newtab, e, this.resultContainer)) {
+      invokeCommand(origText, newtab, e, this.resultContainer);
+    }
+  }
 }
+
+export default App;

@@ -16,47 +16,51 @@ class ResultContainer extends Nav {
     }, this);
   }
 
-  function setColor (_posi, _color, _forg){
-    outp.childNodes[_posi].style.background = _color;
-    outp.childNodes[_posi].style.color = _forg;
+  setColor (_posi, _color, _forg){
+    this.domEl.childNodes[_posi].style.background = _color;
+    this.domEl.childNodes[_posi].style.color = _forg;
   }
 
-  function selectMove(direction) { // selectResult
+  isLastPos(posi, dir) {
+    let result = posi >= 0;
+    if(dir === 'down') result = posi < (this.results.length - 1);
+    return result;
+  }
 
+  selectMove(direction) { // selectResult
     let searchBar = document.getElementById('sfnav_quickSearch');
+    let firstChild;
+    let results = this.domEl;
+    let posi = this.store.get('posi');
 
-    var firstChild;
-
-    if(outp.childNodes[posi] != null)
-      firstChild = outp.childNodes[posi].firstChild.nodeValue;
-    else
+    if(this.domeEl.childNodes[posi] != null) {
+      firstChild = this.domeEl.childNodes[posi].firstChild.nodeValue;
+    } else {
       firstChild = null;
-
-    let textfield = searchBar;
-    let isLastPos = direction == 'down' ? posi < words.length-1 : posi >= 0
-
-    if (words.length > 0 && isLastPos) {
-      if(posi < 0) posi = 0;
-      posi = posi + (direction == 'down' ? 1 : -1);
-      if(outp.childNodes[posi] != null)
-        firstChild = outp.childNodes[posi].firstChild.nodeValue;
-      else
-        firstChild = null;
-      if (posi >=0) {
-        outp.childNodes[posi + (direction == 'down' ? -1 : 1) ].classList.remove('sfnav_selected');
-        outp.childNodes[posi].classList.add('sfnav_selected');
-        outp.childNodes[posi].scrollIntoViewIfNeeded();
-        textfield.value = firstChild;
-        return false
-        //if(textfield.value.indexOf('<') != -1 && textfield.value.indexOf('>') != -1) {
-          //textfield.setSelectionRange(textfield.value.indexOf('<'), textfield.value.length);
-          //textfield.focus();
-         // return false;
-        //}
+      let textfield = searchBar;
+      if (this.results.length > 0 && this.isLastPos()) {
+        if(posi < 0) posi = 0;
+        posi = posi + (direction == 'down' ? 1 : -1);
+        if(this.domeEl.childNodes[posi] != null) {
+          this.store.update('posi', posi);
+          firstChild = this.domeEl.childNodes[posi].firstChild.nodeValue;
+        } else {
+          firstChild = null;
+        if (posi >= 0) {
+          this.domEl.childNodes[posi + (direction == 'down' ? -1 : 1) ].classList.remove('sfnav_selected');
+          this.domEl.childNodes[posi].classList.add('sfnav_selected');
+          this.domEl.childNodes[posi].scrollIntoViewIfNeeded();
+          textfield.value = firstChild;
+          return false
+          //if(textfield.value.indexOf('<') != -1 && textfield.value.indexOf('>') != -1) {
+            //textfield.setSelectionRange(textfield.value.indexOf('<'), textfield.value.length);
+            //textfield.focus();
+           // return false;
+          //}
+        }
       }
     }
   }
-
 }
 
 export default ResultContainer;

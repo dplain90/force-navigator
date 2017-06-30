@@ -7,6 +7,12 @@ class Store {
     this.data['SFAPI_VERSION'] = 'v33.0';
     this.data['loader_url'] = chrome.extension.getURL("images/ajax-loader.gif");
     this.data['logo_url'] = chrome.extension.getURL("images/128.png");
+    this.data['posi'] = -1;
+    this.data['new_tab_keys'] = [
+      "ctrl+enter",
+      "command+enter",
+      "shift+enter"
+    ];
 
     this.add = this.add.bind(this);
     this.get = this.get.bind(this);
