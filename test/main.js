@@ -726,7 +726,7 @@ var sfnav = (function() {
     var theurl = serverInstance + '/ui/setup/Setup'
     var req = new XMLHttpRequest();
     req.onload = function() {
-      parseSetupTree(this.response);
+      parseTree(this.response);
       hideLoadingIndicator();
     }
     req.open("GET", theurl);

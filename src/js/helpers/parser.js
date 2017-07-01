@@ -1,4 +1,8 @@
 import { store } from '../main.js';
+import FileNode from './file_node.js';
+
+
+let fileKeys = {};
 
 export const getServerURL = () => {
   let url = location.origin + "";
@@ -30,87 +34,82 @@ export const getServerURL = () => {
 export const parseMetaData = (data) => {
     if(data.length == 0) return;
     let metadata = JSON.parse(data);
-    let cmds = store.get('cmds');
-    if(!cmds) cmds = {};
-
-    let act = {};
-    let metaData = {};
+    let metaRoot = new FileNode("", "", null);
+    let listParent = new FileNode("", "List", metaRoot);
+    let newParent = new FileNode("", "New", metaRoot);
     metadata.sobjects.map( obj => {
-
       if(obj.keyPrefix != null) {
-
-        let {label, labelPlural, keyPrefix, urls} = obj;
-        let mRecord = {label, labelPlural, keyPrefix, urls};
-        metaData[obj.keyPrefix] = mRecord;
-
-        act = {
-          key: obj.name,
-          keyPrefix: obj.keyPrefix,
-          url: getServerURL() + '/' + obj.keyPrefix
-        };
-        cmds['List ' + mRecord.labelPlural] = act;
-        cmds['List ' + mRecord.labelPlural]['synonyms'] = [obj.name];
-
-        act = {
-          key: obj.name,
-          keyPrefix: obj.keyPrefix,
-          url: getServerURL() + '/' + obj.keyPrefix + '/e',
+        let metaLink =  `${getServerURL()}/` + obj.keyPrefix;
+        metaRoot.eachChild((parent) => {
+          let child = new MetaNode(obj, parent, metaLink);
+          parent.addChild(child);
+          fileKey[child.txt] = child;
         }
-        cmds['New ' + mRecord.label] = act;
-        cmds['New ' + mRecord.label]['synonyms'] = [obj.name];
-
       }
-    });
-
-    store.update('cmds', cmds);
-    store.add('meta', metaData);
-
+    };
   };
 
 export const parseCustomObjectTree = (html) => {
-  let cmds = store.get('cmds');
+  let rootNode = FileNode("Setup > Custom Object", "", null);
   $(html).find('th a').each(function(el) {
-    cmds['Setup > Custom Object > ' + this.text] = {url: this.href, key: this.text};
-    });
+    createChildNode(this, rootNode);
+  });
+};
 
-    store.update('cmds', cmds);
-  };
+const createChildNode = (el, parent, selector) => {
+  el = selector ? el.querySelector(selector) : el;
+  let txt = el.querySelector(selector).innerText;
+  let link = el.querySelector(selector).getAttribute("href");
+  let childNode = new FileNode(txt, link, parent);
+  fileKeys[txt] = childNode;
+  parent.addChild(childNode);
+  return childNode;
+};
+
+const parseBranch = (el, parent) => {
+  let children = el.querySelector(".childContainer").children;
+  for (let i = 0; i < children.length; i++) {
+    let child = children[i];
+    if(child.className === 'parent') {
+      let childNode = createChildNode(child, parent, ".setupFolder");
+      parseBranch(child, childNode);
+    } else {
+      createChildNode(child, parent, "a");
+    }
+  }
+};
+
+const parseTree = (html) => {
+  let root = html.getElementById("AutoNumber5");
+  let rootNode = new FileNode("", "", null);
+  let rootChildren = root.children;
+  for (let i = 0; i < rootChildren.length; i++) {
+    let child = rootChildren[i];
+    if(child.className === "setupNavtree") {
+      createChildNode(child, rootNode, ".setupSection");
+    }
+    if(child.className === "parent") {
+
+      let parentNode = createChildNode(child, rootNode, ".setupFolder");
+      parseBranch(child, parentNode);
+    }
+  }
+  console.log(fileKeys);
+  store.add['fileTree'] = fileKeys;
+};
+
+
+
+// .setupNavtree
+  // .setupSection ( the link )
+// .parent
+  // .setUpFolder ( the link )
+  // .childContainer
+    // .setupLeaf
+      // (the link )
+    // .parent ( and so on )
+
 
 export const parseSetupTree = (html) => {
-    let cmds = store.get('cmds');
-    let textLeafSelector = '.setupLeaf > a[id*="_font"]';
-    let all = html.querySelectorAll(textLeafSelector);
-    let strName;
-    let as;
-    let strNameMain;
-    [].map.call(all, function(item) {
-      let hasTopParent = false, hasParent = false;
-      let parent, topParent;
-      let parentEl, topParentEl;
-
-      if (item.parentElement != null && item.parentElement.parentElement != null && item.parentElement.parentElement.parentElement != null
-          && item.parentElement.parentElement.parentElement.className.indexOf('parent') !== -1) {
-
-        hasParent = true;
-        parentEl = item.parentElement.parentElement.parentElement;
-        parent = parentEl.querySelector('.setupFolder').innerText;
-      }
-      if(hasParent && parentEl.parentElement != null && parentEl.parentElement.parentElement != null
-         && parentEl.parentElement.parentElement.className.indexOf('parent') !== -1) {
-        hasTopParent = true;
-        topParentEl = parentEl.parentElement.parentElement;
-        topParent = topParentEl.querySelector('.setupFolder').innerText;
-      }
-
-      strNameMain = 'Setup > ' + (hasTopParent ? (topParent + ' > ') : '');
-      strNameMain += (hasParent ? (parent + ' > ') : '');
-
-      strName = strNameMain + item.innerText;
-
-      if(cmds[strName] == null) cmds[strName] = {url: item.href, key: strName};
-
-    });
-
-    store.update('cmds', cmds);
-
+    parseTree(html);
   };

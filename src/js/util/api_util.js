@@ -76,7 +76,7 @@ export const getSetupTree = () => {
   let url = serverUrl('/ui/setup/Setup');
   let xhr = new XMLHttpRequest();
   xhr.onload = function() {
-    Parse.parseSetupTree(this.response);
+    Parse.parseTree(this.response);
     getCustomObjects();
     loader.hide();
   }

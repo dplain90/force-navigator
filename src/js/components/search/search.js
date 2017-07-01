@@ -25,7 +25,7 @@ class Search extends Nav {
   addElements(ins)
   {
     let posi = null;
-    debugger
+
     let cmds = this.store.get('cmds');
     if(ins.substring(0,9) === 'login as ') {
         addVisibleWord('Usage: login as <FirstName> <LastName> OR <Username>');
