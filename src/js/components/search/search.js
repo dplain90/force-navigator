@@ -1,38 +1,46 @@
 
-import SearchEntry from './search_entry.js';
-import Nav from './nav.js';
-import { store } from '../../store/store.js';
+import SearchResults from './search_result.js';
+import Nav from '../nav.js';
+import { store } from '../../main.js';
 
 class Search extends Nav {
-  constructor(results) {
+  constructor(results, nav) {
     super();
     this.domEl = document.getElementById("sfnav_quickSearch");
     this.searchBox = document.getElementById("sfnav_search_box");
     this.handleChange = this.handleChange.bind(this);
     this.domEl.oninput = this.handleChange;
     this.addElements = this.addElements.bind(this);
+    this.addVisibleWord = this.addVisibleWord.bind(this);
+    this.compileWords = this.compileWords.bind(this);
+    this.handleCfStr = this.handleCfStr.bind(this);
+    this.addWord = this.addWord.bind(this);
+    this.setVisibility = this.setVisibility.bind(this);
+    this.nav = nav;
     this.results = results;
+    this.store = store;
   }
 
   addElements(ins)
   {
     let posi = null;
+    let cmds = this.store.get('cmds');
     if(ins.substring(0,9) == 'login as ') {
         addVisibleWord('Usage: login as <FirstName> <LastName> OR <Username>');
       }
     else if(ins.substring(0,3) == 'cf ') {
-        let posi = handleCfStr(ins);
+        let posi = this.handleCfStr(ins);
       }
     else {
         let words = getWord(ins, cmds);
         if (words.length > 0){
           this.results.clearOutput();
-          for (let i=0; i< words.length; ++i) addWord(words[i]);
-          setVisible("visible");
+          for (let i=0; i< words.length; ++i) this.addWord(words[i]);
+          this.nav.setVisible("visible");
           input = document.getElementById("sfnav_quickSearch").value;
         } else {
           this.results.clearOutput();
-          setVisible("hidden");
+          this.nav.setVisible("hidden");
           posi = -1;
         }
     }
@@ -74,28 +82,30 @@ class Search extends Nav {
   }
 
   addVisibleWord(word) {
-    clearOutput();
-    addWord(word);
-    setVisible('visible');
+    this.results.clearOutput();
+    this.addWord(word);
+    this.nav.setVisible('visible');
   }
 
   handleCfStr(ins){
-    let wordQty = ins.length
+    let META_DATATYPES = this.store.get('META_DATATYPES');
+    let wordQty = ins.length;
     if(wordQty < 4) {
-      addVisibleWord('Usage: cf <Object API Name> <Field Name> <Data Type>');
+      this.addVisibleWord('Usage: cf <Object API Name> <Field Name> <Data Type>');
     }
     else if(wordQty >= 4) {
-      clearOutput();
+      this.results.clearOutput();
       let wordArray = ins.split(' ');
-      let words = getWord(wordArray[1], META_DATATYPES);
-      let finalWords = compileWords(words, wordArray);
+      let words = this.getWord(wordArray[1], META_DATATYPES);
+      let finalWords = this.compileWords(words, wordArray);
       if (finalWords){
-        clearOutput();
-        finalWords.forEach((word) => addWord(word));
-        setVisible("visible");
+        this.results.clearOutput();
+        finalWords.forEach((word) => this.addWord(word));
+        this.nav.setVisible("visible");
         input = document.getElementById("sfnav_quickSearch").value;
       } else {
-        setVisible("hidden");
+        this.nav.setVisible("hidden");
+        this.store.update('posi', -1);
         return posi = -1;
       }
       /*
@@ -104,38 +114,20 @@ class Search extends Nav {
          addWord(Object.keys(META_DATATYPES)[i]);
          }
        */
-      setVisible('visible');
+      this.nav.setVisible('visible');
     } else {
-      clearOutput();
+      this.results.clearOutput();
     }
     return null;
   }
 
 
   addWord(word){
-    let d = document.createElement("div");
-    let sp;
-    if(cmds[word] != null && cmds[word].url != null && cmds[word].url != "") {
-      sp = document.createElement("a");
-      sp.setAttribute("href", cmds[word].url);
-
-    } else {
-      sp = d;
+    let cmds = this.store.get('cmds');
+    if(cmds[word]) {
+      let result = new SearchResult(cmds[word], word);
+      this.results.addEl(result.domEl, result);
     }
-
-    if(cmds[word] != null && cmds[word].id != null && cmds[word].id != "") {
-      sp.id = cmds[word].id;
-    }
-
-    sp.classList.add('sfnav_child');
-    sp.appendChild(document.createTextNode(word));
-    sp.onmouseover = mouseHandler;
-    sp.onmouseout = mouseHandlerOut;
-    sp.onclick = mouseClick;
-    if(sp.id && sp.length > 0){
-      sp.onclick = mouseClickLoginAs;
-    }
-    outp.appendChild(sp);
   }
 
   setVisibility(val) {
@@ -155,3 +147,5 @@ class Search extends Nav {
     }
   }
 }
+
+export default Search;

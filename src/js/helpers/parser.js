@@ -31,6 +31,8 @@ export const parseMetaData = (data) => {
     if(data.length == 0) return;
     let metadata = JSON.parse(data);
     let cmds = store.get('cmds');
+    debugger
+    if(!cmds) cmds = {};
     let mRecord = {};
     let act = {};
     let metaData = {};

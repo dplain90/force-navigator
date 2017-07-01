@@ -20,7 +20,7 @@ export const setDefaultSession = () => {
   let sid = getCookie('sid');
   let url = getServerURL() + '';
   let ftClient = store.get('ft-cli');
-  ftClient.setSessionToken(cookie, version, url);
+  ftClient.setSessionToken(sid, version, url);
 };
 
 export const setSession = (val) => {

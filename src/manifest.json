@@ -9,6 +9,12 @@
     "icons": {
         "128": "images/128-white.png"
     },
+    "background": {
+        "persistent": true,
+        "scripts": [
+        "background.js"
+    ]
+    },
     "web_accessible_resources": [
        "images/ajax-loader.gif",
        "images/128.png"

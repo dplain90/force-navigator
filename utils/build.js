@@ -1,7 +1,12 @@
-var webpack = require("webpack"),
-    config = require("../webpack.config");
+var fileSystem = require("fs-extra");
+
 
 require("./prepare");
+var webpack = require("webpack"),
+config = require("../webpack.config");
+
+
+
 
 delete config.chromeExtensionBoilerplate;
 

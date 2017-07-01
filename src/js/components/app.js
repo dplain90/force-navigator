@@ -1,19 +1,20 @@
-import { getServerURL } from '../helpers/parser.js';
+
 import { store } from '../main.js';
 import * as APIUtil  from '../util/api_util.js';
 import * as SessionUtil from '../util/session_util.js';
 import ResultContainer from './search/result_container.js';
+import Search from './search/search.js';
+import Nav from './nav.js';
 import { Mouse } from './mouse_trap.js';
+import Loader from './loader.js';
 import forceTooling from '../forceTooling.js';
 
 class App {
   constructor() {
-    let sid = SessionUtil.getCookie('sid')
-    // let invalidCkie = sid.split('!').length !== 2)
+    this.Mousetrap = Mouse;
     this.store = store;
     this.init = this.init.bind(this);
     this.setDefaultSession = SessionUtil.setDefaultSession;
-    this.serverURL = getServerURL();
     this.setupSearchBox = this.setupSearchBox.bind(this);
     this.kbdCommand = this.kbdCommand.bind(this);
     this.initShortcuts = this.initShortcuts.bind(this);
@@ -51,18 +52,22 @@ class App {
     loader.hide();
     this.omnomnom = SessionUtil.getCookie('sid');
     APIUtil.getAllData();
-    this.search = new Search(this.resultContainer);
     this.nav = new Nav();
+    this.search = new Search(this.resultContainer, this.nav);
     this.initShortcuts();
   }
 
   initShortcuts() {
+    let bindShortcut = this.bindShortcut;
+
     chrome.extension.sendMessage({'action':'Get Settings'},
       function(response) {
-        let shortcut = response['shortcut'];
-        bindShortcut(shortcut);
+        debugger
+        console.log(response);
+        bindShortcut(response['shortcut']);
       }
     );
+
     // chrome.storage.local.get('settings', function(results) {
     //     if(typeof results.settings.shortcut === 'undefined')
     //     {
@@ -87,31 +92,33 @@ class App {
   }
 
   bindShortcut(shortcut) {
+    debugger
+    if(!shortcut) shortcut = 'shift+space';
     let search = this.search;
     let searchBar = search.domEl;
     let nav = this.nav;
     let store = this.store;
 
     let selectMove = this.resultContainer.selectMove;
-    Mousetrap.bindGlobal(shortcut, function(e) {
+    this.Mousetrap.bindGlobal(shortcut, function(e) {
       search.setVisibility('visible');
       return false;
     });
 
-    Mousetrap.bindGlobal('esc', this.escCallback);
+    this.Mousetrap.bindGlobal('esc', this.escCallback);
 
-    Mousetrap.wrap(searchBar).bind('enter', this.kbdCommand);
+    this.Mousetrap.wrap(searchBar).bind('enter', this.kbdCommand);
 
     for (var i = 0; i < newTabKeys.length; i++) {
-      Mousetrap.wrap(searchBar).bind(newTabKeys[i], this.kbdCommand);
+      this.Mousetrap.wrap(searchBar).bind(newTabKeys[i], this.kbdCommand);
     };
 
-    Mousetrap.wrap(searchBar).bind('down', selectMove.bind(this, 'down'));
+    this.Mousetrap.wrap(searchBar).bind('down', selectMove.bind(this, 'down'));
 
-    Mousetrap.wrap(searchBar).bind('up', selectMove.bind(this, 'up'));
+    this.Mousetrap.wrap(searchBar).bind('up', selectMove.bind(this, 'up'));
 
 
-    Mousetrap.wrap(searchBar).bind('backspace', function(e) {
+    this.Mousetrap.wrap(searchBar).bind('backspace', function(e) {
       store.update('posi', -1);
       store.update('oldins', -1);
     });

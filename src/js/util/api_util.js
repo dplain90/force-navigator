@@ -2,7 +2,7 @@ import * as Parse from '../helpers/parser.js';
 import { store } from '../main.js';
 import { getCookie } from './session_util.js';
 
-const serverUrl = (ending) => `${getServerURL()}${ending}`;
+const serverUrl = (ending) => `${Parse.getServerURL()}${ending}`;
 
 export const httpGet =  (url, callback) =>
 {
@@ -22,13 +22,14 @@ export const getMetaData = (callback) => {
 
   let sid = "Bearer " + getCookie('sid');
   let ending = `/services/data/${store.get('SFAPI_VERSION')}/sobjects/`;
-  let url = serverURL(ending);
+  let url = serverUrl(ending);
 
   xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
   xhr.setRequestHeader("Authorization", sid);
-  xhr.onload = function(response) {
+  xhr.onload = (response) => {
     callback(response.target.responseText);
+    getSetupTree();
     // wonder if this should be currentTarget ?
   }
   xhr.send();
@@ -49,6 +50,7 @@ export const getAllMetaData = () => {
         cmds = {};
         metaData = {};
         getMetaData(Parse.parseMetaData);
+
       } else {
       }
     });
@@ -57,7 +59,7 @@ export const getAllMetaData = () => {
 
 export const getCustomObjects = () =>
 {
-  let url = serverURL('/p/setup/custent/CustomObjectsPage');
+  let url = serverUrl('/p/setup/custent/CustomObjectsPage');
   let xhr = new XMLHttpRequest();
   xhr.onload = function() {
     parseCustomObjectTree(this.response);
@@ -70,10 +72,11 @@ export const getCustomObjects = () =>
 
 export const getSetupTree = () => {
   let loader = store.get('loader');
-  let url = serverURL('/ui/setup/Setup');
+  let url = serverUrl('/ui/setup/Setup');
   let xhr = new XMLHttpRequest();
   xhr.onload = function() {
     Parse.parseSetupTree(this.response);
+    getCustomObjects();
     loader.hide();
   }
   xhr.open("GET", url);
@@ -99,6 +102,5 @@ export const login = (id) => {
 
 export const getAllData = () => {
   getAllMetaData();
-  getSetupTree();
-  getCustomObjects();
+
 }

@@ -1,3 +1,4 @@
+import Nav from './nav.js';
 class Loader extends Nav {
   constructor() {
     super();
@@ -7,8 +8,13 @@ class Loader extends Nav {
   }
 
   show() {
-    let that = this;
+      let that = this;
     this.domEl.setVisibility('visible');
+    setTimeout(() => (that.domEl.setVisibility('hidden')), 30000);
+  }
+
+  hide() {
+    let that = this;
     setTimeout(() => (that.domEl.setVisibility('hidden')), 30000);
   }
 }
