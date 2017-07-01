@@ -1,5 +1,8 @@
+import NodeBase from './node_base.js';
+
 class FileNode {
   constructor(txt, link, parent) {
+    super(parent);
     this.txt = txt;
     this.link = link;
     if(parent !== null && parent.parent !== null ) {
@@ -7,20 +10,7 @@ class FileNode {
     } else {
       this.path = this.txt;
     }
-    this.children = [];
-    this.parent = parent;
-    this.addChild = this.addChild.bind(this);
-    this.eachChild = this.eachChild.bind(this);
   }
-
-  addChild(child) {
-    this.children.push(child);
-  }
-
-  eachChild(callback) {
-    this.children.forEach((child) => (callback(child)), this);
-  }
-
 }
 
 export default FileNode;

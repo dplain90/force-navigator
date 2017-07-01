@@ -31,6 +31,14 @@ export const getServerURL = () => {
 };
 
 
+
+export const parseCustomFields = (data) => {
+
+
+
+};
+
+
 export const parseMetaData = (data) => {
     if(data.length == 0) return;
     let metadata = JSON.parse(data);
@@ -97,8 +105,6 @@ const parseTree = (html) => {
   console.log(fileKeys);
   store.add['fileTree'] = fileKeys;
 };
-
-
 
 // .setupNavtree
   // .setupSection ( the link )
