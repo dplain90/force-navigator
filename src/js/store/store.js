@@ -4,6 +4,7 @@ class Store {
   constructor() {
     this.data = {};
     this.data['META_DATATYPES'] = META_DATATYPES;
+    this.data['cmds'] = {};
     this.data['METADATA_KEYS'] = METADATA_KEYS;
     this.data['SFAPI_VERSION'] = 'v33.0';
     this.data['loader_url'] = chrome.extension.getURL("images/ajax-loader.gif");

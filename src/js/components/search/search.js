@@ -15,6 +15,7 @@ class Search extends Nav {
     this.compileWords = this.compileWords.bind(this);
     this.handleCfStr = this.handleCfStr.bind(this);
     this.addWord = this.addWord.bind(this);
+    this.getWords = this.getWords.bind(this);
     this.setVisibility = this.setVisibility.bind(this);
     this.nav = nav;
     this.results = results;
@@ -24,23 +25,24 @@ class Search extends Nav {
   addElements(ins)
   {
     let posi = null;
+    debugger
     let cmds = this.store.get('cmds');
-    if(ins.substring(0,9) == 'login as ') {
+    if(ins.substring(0,9) === 'login as ') {
         addVisibleWord('Usage: login as <FirstName> <LastName> OR <Username>');
       }
-    else if(ins.substring(0,3) == 'cf ') {
+    else if(ins.substring(0,3) === 'cf ') {
         let posi = this.handleCfStr(ins);
       }
     else {
-        let words = getWord(ins, cmds);
+        let words = this.getWords(ins, cmds);
         if (words.length > 0){
           this.results.clearOutput();
           for (let i=0; i< words.length; ++i) this.addWord(words[i]);
-          this.nav.setVisible("visible");
+          this.nav.setVisibility("visible");
           input = document.getElementById("sfnav_quickSearch").value;
         } else {
           this.results.clearOutput();
-          this.nav.setVisible("hidden");
+          this.nav.setVisibility("hidden");
           posi = -1;
         }
     }
@@ -63,7 +65,7 @@ class Search extends Nav {
 
 
     let finalWords = [];
-
+    let meta_keys = this.store.get('METADATA_KEYS');
     words.forEach((word) => {
 
       let key = word.toUpperCase();
@@ -84,7 +86,33 @@ class Search extends Nav {
   addVisibleWord(word) {
     this.results.clearOutput();
     this.addWord(word);
-    this.nav.setVisible('visible');
+    this.nav.setVisibility('visible');
+  }
+
+
+  getWords(val, types) {
+    let filteredResults = [];
+    const keys = Object.keys(types);
+    const results = types;
+    debugger
+    if(results === {} && val !== ""){
+      return [];
+    } else if( val === "") {
+      keys.forEach( (key) => {
+        filteredResults.push(results[key]);
+      });
+      return filteredResults;
+    }
+    else {
+      keys.forEach( (key) => {
+        let resultStr = key.substring(0, val.length).toLowerCase();
+        if( resultStr === val.toLowerCase()) {
+          filteredResults.push(results[key]);
+          console.log(filteredResults);
+        }
+      });
+      return filteredResults;
+    }
   }
 
   handleCfStr(ins){
@@ -96,15 +124,16 @@ class Search extends Nav {
     else if(wordQty >= 4) {
       this.results.clearOutput();
       let wordArray = ins.split(' ');
-      let words = this.getWord(wordArray[1], META_DATATYPES);
+      let words = this.getWords(wordArray[1], META_DATATYPES);
+
       let finalWords = this.compileWords(words, wordArray);
       if (finalWords){
         this.results.clearOutput();
-        finalWords.forEach((word) => this.addWord(word));
-        this.nav.setVisible("visible");
+        finalWords.forEach((word) => (this.addWord(word)), this);
+        this.nav.setVisibility("visible");
         input = document.getElementById("sfnav_quickSearch").value;
       } else {
-        this.nav.setVisible("hidden");
+        this.nav.setVisibility("hidden");
         this.store.update('posi', -1);
         return posi = -1;
       }
@@ -114,7 +143,7 @@ class Search extends Nav {
          addWord(Object.keys(META_DATATYPES)[i]);
          }
        */
-      this.nav.setVisible('visible');
+      this.nav.setVisibility('visible');
     } else {
       this.results.clearOutput();
     }
@@ -142,7 +171,7 @@ class Search extends Nav {
     }
     else{
       document.querySelector('#sfnav_output').innerHTML = '';
-      setVisible("hidden");
+      this.nav.setVisibility("hidden");
       this.store.update('posi', -1);
     }
   }

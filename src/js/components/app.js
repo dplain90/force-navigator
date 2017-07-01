@@ -41,13 +41,12 @@ class App {
   }
 
   init() {
+    this.setupSearchBox();
     let ftClient = new forceTooling.Client();
     let loader = new Loader();
     this.store.add('ft-cli', ftClient);
     this.store.add('loader', loader);
-    this.kbdCommand = this.kbdCommand.bind(this);
     this.setDefaultSession();
-    this.setupSearchBox();
     this.resultContainer = new ResultContainer();
     loader.hide();
     this.omnomnom = SessionUtil.getCookie('sid');
@@ -62,8 +61,6 @@ class App {
 
     chrome.extension.sendMessage({'action':'Get Settings'},
       function(response) {
-        debugger
-        console.log(response);
         bindShortcut(response['shortcut']);
       }
     );
@@ -92,13 +89,17 @@ class App {
   }
 
   bindShortcut(shortcut) {
-    debugger
     if(!shortcut) shortcut = 'shift+space';
     let search = this.search;
     let searchBar = search.domEl;
     let nav = this.nav;
-    let store = this.store;
 
+    let store = this.store;
+    let newTabKeys = [
+      "ctrl+enter",
+      "command+enter",
+      "shift+enter"
+    ];
     let selectMove = this.resultContainer.selectMove;
     this.Mousetrap.bindGlobal(shortcut, function(e) {
       search.setVisibility('visible');

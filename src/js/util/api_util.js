@@ -24,7 +24,7 @@ export const getMetaData = (callback) => {
   let ending = `/services/data/${store.get('SFAPI_VERSION')}/sobjects/`;
   let url = serverUrl(ending);
 
-  xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
   xhr.setRequestHeader("Authorization", sid);
   xhr.onload = (response) => {
@@ -45,7 +45,8 @@ export const getAllMetaData = () => {
   chrome.extension.sendMessage({
     action:'Get Commands', 'key': hash},
     function(response) {
-      cmds = response;
+      let cmds = response;
+      let metaData;
       if(cmds == null || cmds.length == 0) {
         cmds = {};
         metaData = {};
@@ -62,7 +63,7 @@ export const getCustomObjects = () =>
   let url = serverUrl('/p/setup/custent/CustomObjectsPage');
   let xhr = new XMLHttpRequest();
   xhr.onload = function() {
-    parseCustomObjectTree(this.response);
+    Parse.parseCustomObjectTree(this.response);
   }
   xhr.open("GET", url);
   xhr.responseType = 'document';

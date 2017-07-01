@@ -31,29 +31,30 @@ export const parseMetaData = (data) => {
     if(data.length == 0) return;
     let metadata = JSON.parse(data);
     let cmds = store.get('cmds');
-    debugger
     if(!cmds) cmds = {};
-    let mRecord = {};
+
     let act = {};
     let metaData = {};
     metadata.sobjects.map( obj => {
 
       if(obj.keyPrefix != null) {
-        mRecord = {label, labelPlural, keyPrefix, urls} = obj;
+
+        let {label, labelPlural, keyPrefix, urls} = obj;
+        let mRecord = {label, labelPlural, keyPrefix, urls};
         metaData[obj.keyPrefix] = mRecord;
 
         act = {
           key: obj.name,
           keyPrefix: obj.keyPrefix,
-          url: serverInstance + '/' + obj.keyPrefix
-        }
+          url: getServerURL() + '/' + obj.keyPrefix
+        };
         cmds['List ' + mRecord.labelPlural] = act;
         cmds['List ' + mRecord.labelPlural]['synonyms'] = [obj.name];
 
         act = {
           key: obj.name,
           keyPrefix: obj.keyPrefix,
-          url: serverInstance + '/' + obj.keyPrefix + '/e',
+          url: getServerURL() + '/' + obj.keyPrefix + '/e',
         }
         cmds['New ' + mRecord.label] = act;
         cmds['New ' + mRecord.label]['synonyms'] = [obj.name];
