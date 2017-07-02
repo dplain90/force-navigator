@@ -20,7 +20,33 @@ class Search extends Nav {
     this.nav = nav;
     this.results = results;
     this.store = store;
+
+
+
+
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   addElements(ins)
   {

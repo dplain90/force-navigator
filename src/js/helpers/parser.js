@@ -1,35 +1,48 @@
 import { store } from '../main.js';
 import FileNode from './file_node.js';
-
-
 let fileKeys = {};
 
+export const isSpace = (val) => {
+  return val.slice(val.length -1) === " ";
+}
+
+export const empty = (val) => {
+  return val === '';
+}
+
+export const lastWord = (words) => {
+  return words.split(' ')[words.length - 1];
+}
 export const getServerURL = () => {
-  let url = location.origin + "";
-  let urlParseArray = url.split(".");
-  let i;
-  let returnUrl;
+  let url = window.location.href;
+  let regX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/;
+  let domain = u.match(regX)[1];
+  let invalidURL = true
+  ["salesforce.com", "cloudforce.com", "visual.force"].forEach((u) => {
+    if(domain.includes(u)) invalidURL = false;
+  });
 
-  if(url.indexOf("salesforce") != -1)
-    {
-      returnUrl = url.substring(0, url.indexOf("salesforce")) + "salesforce.com";
-      return returnUrl;
-    }
-
-  if(url.indexOf("cloudforce") != -1)
-    {
-      returnUrl = url.substring(0, url.indexOf("cloudforce")) + "cloudforce.com";
-      return returnUrl;
-    }
-
-  if(url.indexOf("visual.force") != -1)
-    {
-      returnUrl = 'https://' + urlParseArray[1] + '';
-      return returnUrl;
-    }
-  return returnUrl;
+  if(invalidURL) return false;
+  return 'https://' + doman;
 };
 
+export const parseComands = () => {
+  case 'refresh metadata':
+    let loader = store.get('loader');
+    loader.show();
+    APIUtil.getAllObjectMetadata();
+    break;
+  case 'setup':
+    window.location.href = serverInstance + '/ui/setup/Setup';
+    break;
+  default:
+    if(c.substring(0,3) === 'cf ') {
+      new Field(results, cmd);
+    } else if(c.substring(0,9) == 'login as ') {
+
+
+
+}
 
 
 export const parseCustomFields = (data) => {
@@ -42,9 +55,10 @@ export const parseCustomFields = (data) => {
 export const parseMetaData = (data) => {
     if(data.length == 0) return;
     let metadata = JSON.parse(data);
-    let metaRoot = new FileNode("", "", null);
-    let listParent = new FileNode("", "List", metaRoot);
-    let newParent = new FileNode("", "New", metaRoot);
+
+    let listParent = new CommandNode("List", root, new Command());
+    let newParent = new CommandNode("New", root, new Command());
+
     metadata.sobjects.map( obj => {
       if(obj.keyPrefix != null) {
         let metaLink =  `${getServerURL()}/` + obj.keyPrefix;
@@ -89,7 +103,7 @@ const parseBranch = (el, parent) => {
 
 const parseTree = (html) => {
   let root = html.getElementById("AutoNumber5");
-  let rootNode = new FileNode("", "", null);
+  let rootNode = new CommandNode("", root, new Command());
   let rootChildren = root.children;
   for (let i = 0; i < rootChildren.length; i++) {
     let child = rootChildren[i];

@@ -8,6 +8,7 @@ import Nav from './nav.js';
 import { Mouse } from './mouse_trap.js';
 import Loader from './loader.js';
 import forceTooling from '../forceTooling.js';
+import NodeBase from './nodes/node_base.js';
 
 class App {
   constructor() {
@@ -44,10 +45,10 @@ class App {
     this.setupSearchBox();
     let ftClient = new forceTooling.Client();
     let loader = new Loader();
-    this.store.add('ft-cli', ftClient);
-    this.store.add('loader', loader);
-    this.setDefaultSession();
     this.resultContainer = new ResultContainer();
+    this.rootNode = new NodeBase(null);
+    this.store.add(['ft-cli', ftClient, 'loader', loader, 'results', this.resultContainer, 'root', this.rootNode]);
+    this.setDefaultSession();
     loader.hide();
     this.omnomnom = SessionUtil.getCookie('sid');
     APIUtil.getAllData();

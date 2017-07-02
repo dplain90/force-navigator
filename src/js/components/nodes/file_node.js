@@ -1,11 +1,10 @@
 import NodeBase from './node_base.js';
 
-class FileNode {
+class FileNode extends CommandNode {
   constructor(txt, link, parent) {
-    super(parent);
-    this.txt = txt;
+    super(txt, parent);
     this.link = link;
-    if(parent !== null && parent.parent !== null ) {
+    if(parent.parent !== null ) {
       this.path = `${parent.path} > ${this.txt}`;
     } else {
       this.path = this.txt;

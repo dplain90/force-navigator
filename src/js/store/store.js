@@ -23,21 +23,32 @@ class Store {
 
   }
 
-  get(k) {
-    return this.data[k];
+  get(...keys) {
+    if(keys.length < 2) return this.data[keys[0]];
+    let result = {};
+    for (let i = 0; i < keys.length; i) {
+      let k = keys[i];
+      result[k] = this.data[k];
+    }
+    return result;
   }
 
   update(k, v) {
     this.add(k,v);
   }
 
-  add(k, v) {
-    this.data[k] = v;
+  add(...objs) {
+    for (let i = 0; i < objs.length - 1; i+2) {
+       let k = objs[i];
+       let v = objs[i+1];
+       this.data[k] = v;
+    }
   }
 
   remove(k) {
     this.data[k] = null;
   }
+
 
   // var storagePayload = {};
   // storagePayload[action] = payload;

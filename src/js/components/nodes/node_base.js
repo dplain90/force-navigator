@@ -13,6 +13,7 @@ class NodeBase {
   eachChild(callback) {
     this.children.forEach((child) => (callback(child)), this);
   }
+
 }
 
 export default NodeBase;

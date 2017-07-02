@@ -10,6 +10,11 @@ class FieldNode extends NodeBase {
     }, this);
   };
 
+
+  execute(type) {
+
+
+  }
 }
 
 export default FieldNode;

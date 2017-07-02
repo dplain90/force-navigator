@@ -3,12 +3,15 @@ import { store } from '../../store/store.js';
 import { getServerURL } from '../../helpers/parser.js';
 import { getCookie } from '../../util/session_util.js';
 class Field extends Command {
-  constructor(results, cmd){
-    super(results);
-    this.cmd = cmd;
+  constructor(){
+    super();
     this.store = store;
+    this.errorEl = errorEl;
+    this.results = this.store.get('results');
     this.createField = this.createField.bind(this);
     this.updateField = this.updateField.bind(this);
+    this.outcomeMsg = this.outcomeMsg.bind(this);
+    this.createMsgDOM = this.createMsgDOM.bind(this);
     this.createFieldOptions = this.createFieldOptions.bind(this);
     this.defaultHash = {
       'command': "",
@@ -22,11 +25,22 @@ class Field extends Command {
        'referenceTo': null,
        'visibleLines': null
     };
-    this.createField();
+
+    this.responseMsgs = {
+      error: {
+        name: 'error',
+        title: 'Error!'
+      },
+      success: {
+        name: 'success',
+        title: 'Success!'
+      }
+    };
   }
 
   updateField(cmd)
   {
+
     let ftClient = this.store.get('ft-cli');
     let options = this.createFieldOptions(cmd);
     let { fieldName, sObjectName } = options;
@@ -36,16 +50,22 @@ class Field extends Command {
           ftClient.update('CustomField', fieldMeta,
             function(success) {
               console.log(success);
-              addSuccess(success);
+              this.createOutcomeMsg([], {
+                name: 'success',
+                title: 'Success! Field Updated!'
+              });
             },
             function(error) {
               console.log(error);
-              addError(error.responseJSON);
+              this.createOutcomeMsg([error.responseJSON], );
             });
         },
           function(error)
           {
-            addError(error.responseJSON);
+            this.createOutcomeMsg([error.responseJSON], {
+              name: 'error',
+              title: 'Error!'
+            });
           });
   }
 
@@ -110,6 +130,22 @@ class Field extends Command {
       }
     });
     return Object.values(valHash);
+  }
+
+  createMsgDOM(el, txt) {
+    el.appendChild(document.createTextNode(txt));
+    el.appendChild(document.createElement('br'));
+  }
+
+  outcomeMsg(txt, type){
+      this.results.clearOutput();
+      let el = document.createElement("div");
+      el.className = `sfnav_child sfnav-${type.name}-wrapper`;
+      this.createMsgDOM(el, type.title);
+      txt.forEach((e) => (el = this.createMsgDOM(el, e.message)), this);
+      this.results.addEl(err);
+      let mainNav = document.getElementById("sfnav_shadow");
+      this.results.setVisible("visible", mainNav);
   }
 }
 
