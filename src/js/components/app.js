@@ -46,7 +46,7 @@ class App {
     this.setupSearchBox();
     let ftClient = new forceTooling.Client();
     let loader = new Loader();
-    this.nav = new Nav();
+    this.nav = new DOMElement("sfnav_shadow");
     this.search = new Search(this.rootNode);
     this.setDefaultSession();
     APIUtil.getAllData();
@@ -81,16 +81,6 @@ class App {
     // });
   }
 
-  escCallback(e){
-    if (this.search.isVisible() || this.nav.isVisible()) {
-      this.resultContainer.clearOutput();
-      this.search.domEl.blur();
-      this.search.domEl.value = '';
-      this.nav.setVisible("hidden");
-      this.search.setVisible("hidden");
-    }
-  }
-
   bindShortcut(shortcut) {
     if(!shortcut) shortcut = 'shift+space';
     let search = this.search;
@@ -109,7 +99,7 @@ class App {
       return false;
     });
 
-    this.Mousetrap.bindGlobal('esc', this.escCallback);
+    this.Mousetrap.bindGlobal('esc', this.search.handleEsc);
 
     this.Mousetrap.wrap(searchBar).bind('enter', this.search.handleSubmit);
 

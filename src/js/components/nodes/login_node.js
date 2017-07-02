@@ -15,6 +15,12 @@ class LoginNode extends CommandNode {
 
   }
 
+  isValid(params){
+    let login = new Login();
+    let { errors, id, results } = login.attempt(params[1]);
+    if(errors) 
+  }
+
   findMatches(val){
     let username = [];
     this.eachChild((child) => {

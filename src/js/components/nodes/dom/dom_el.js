@@ -15,7 +15,11 @@ class DOMElement {
   removeClass(val){
     this.el.classList.remove(val);
   }
-  
+
+  setId(val) {
+    this.el.setAttribute('id', val);
+  }
+
   clear() {
     this.el.innerHTML = '';
     this.el.value = '';

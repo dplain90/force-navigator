@@ -1,10 +1,8 @@
-import Command from './command.js';
 import { store } from '../../store/store.js';
 import { getServerURL } from '../../helpers/parser.js';
 import { getCookie } from '../../util/session_util.js';
-class Field extends Command {
+class Field {
   constructor(cmd){
-    super();
     this.store = store;
     this.errorEl = errorEl;
     this.results = this.store.get('results');

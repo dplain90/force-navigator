@@ -45,7 +45,6 @@ class FieldNode extends CommandNode {
     CustomFields[nodes[1].txt]
   }
 
-
   static setupTree(rootNode) {
     let rootField = new FieldNode('cf', rootNode, 'cmd');
     Object.keys(METADATA_KEYS).forEach((key) => {
@@ -56,13 +55,7 @@ class FieldNode extends CommandNode {
         let link = links[i];
         lastLink = new FieldNode(link, lastLink, 'variable');
       }
-
-
-      links.forEach((link) => new FieldNode(
-
     });
-
-
   }
 
 }

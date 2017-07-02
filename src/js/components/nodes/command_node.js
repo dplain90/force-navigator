@@ -1,3 +1,5 @@
+import SearchResult from '../search/search_result.js';
+
 class CommandNode extends NodeBase {
   constructor(txt, parent) {
     super(parent);
@@ -10,17 +12,38 @@ class CommandNode extends NodeBase {
     this.completeMatch = this.completeMatch.bind(this);
     this.doppelganger = this.doppelganger.bind(this);
     this.matches = this.matches.bind(this);
+    this.dom = new SearchResult(this.txt, this.link);
   }
 
   execute(params){
     this[this.cmd](...params);
   }
 
-  findMatches(val){
+  findMatches(val, container, onClick){
+    let matches = [];
     this.eachChild((child) => {
-      let matches = [];
       if(child.matches(val)) matches.push(child);
     });
+    matches = this.sortMatches(matches);
+    this.addToDOM(matches, onClick);
+    return matches;
+  }
+
+  addToDOM(matches, onClick){
+    for (let i = 0; i < matches.length; i++) {
+      let resultDOM = matches[i].dom;
+      resultDOM.setId(`${i}`);
+      resultDOM.addResult(container, onClick);
+    }
+  }
+
+  sortMatches(matches){
+    let sorted = matches.sort(function(a, b) {
+        let aVal = a.txt.toUpperCase();
+        let bVal = b.txt.toUpperCase();
+        return (aVal < bVal) ? -1 : (aVal > bVal) ? 1 : 0;
+      });
+    return sorted;
   }
 
   completeMatch(txt, val){
@@ -44,18 +67,18 @@ class CommandNode extends NodeBase {
     window.location.href = this.link;
   }
 
-  validCmd(params) {
+  isValid(params) {
     let lastNode = params[params.length - 1];
-    let isValid = lastNode.link ? true : false;
-    return isValid;
+    let valid = lastNode.link ? true : false;
+    return valid;
   }
 
   select(){
-    this.domEl.addClass('sfnav_selected');
+    this.dom.addClass('sfnav_selected');
   }
 
   unselect(){
-    this.domEl.removeClass('sfnav_selected');
+    this.dom.removeClass('sfnav_selected');
   }
 }
 

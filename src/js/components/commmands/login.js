@@ -1,9 +1,36 @@
-import Command from './command.js';
+class Login {
+  constructor() {
 
-class Login extends Command {
-  constructor(results) {
-    super(results);
   }
+
+  // let arrSplit = cmd.split(' ');
+  // let searchValue = arrSplit[2];
+  // if(arrSplit[3] !== undefined)
+  // searchValue += '+' + arrSplit[3];
+  attempt(username) {
+    let query = 'SELECT+Id,+Name,+Username+FROM+User+WHERE+Name+LIKE+\'%25' + username + '%25\'+OR+Username+LIKE+\'%25' + username + '%25\'';
+
+    ftClient.query(query,
+      function(success) {
+        console.log(success);
+        let numberOfUserRecords = success.records.length;
+        if(numberOfUserRecords < 1){
+          addError([{"message":"No user for your search exists."}]);
+        } else if(numberOfUserRecords > 1){
+          loginAsShowOptions(success.records);
+        } else {
+          var userId = success.records[0].Id;
+          loginAsPerform(userId);
+        }
+      },
+      function(error)
+      {
+        console.log(error);
+        addError(error.responseJSON);
+      }
+    );
+  }
+
 
   function loginAsShowOptions(records){
     for(var i = 0; i < records.length; ++i){
