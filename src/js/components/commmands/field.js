@@ -1,6 +1,7 @@
 import Command from './command.js';
 import { store } from '../../store/store.js';
-
+import { getServerURL } from '../../helpers/parser.js';
+import { getCookie } from '../../util/session_util.js';
 class Field extends Command {
   constructor(results, cmd){
     super(results);
@@ -8,6 +9,7 @@ class Field extends Command {
     this.store = store;
     this.createField = this.createField.bind(this);
     this.updateField = this.updateField.bind(this);
+    this.createFieldOptions = this.createFieldOptions.bind(this);
     this.defaultHash = {
       'command': "",
       'sObjectName': "",
@@ -23,45 +25,14 @@ class Field extends Command {
     this.createField();
   }
 
-  function updateField(cmd)
+  updateField(cmd)
   {
-    let arrSplit = cmd.split(' ');
-    let dataType = '';
-    let fieldMetadata;
-    let META_DATATYPES = this.store.get('META_DATATYPES');
     let ftClient = this.store.get('ft-cli');
-
-    if(arrSplit.length >= 3)
-      {
-        for(let key in META_DATATYPES)
-          {
-            if(META_DATATYPES[key].name.toLowerCase() === arrSplit[3].toLowerCase())
-              {
-                dataType = META_DATATYPES[key].name;
-                break;
-              }
-          }
-
-        let sObjectName = arrSplit[1];
-        let fieldName = arrSplit[2];
-        let helpText = null;
-        let typeLength = arrSplit[4];
-        let rightDecimals, leftDecimals;
-        if(parseInt(arrSplit[5]) != NaN )
-          {
-            rightDecimals = parseInt(arrSplit[5]);
-            leftDecimals = typeLength;
-          }
-        else
-          {
-            leftDecimals = 0;
-            rightDecimals = 0;
-          }
-
-        ftClient.queryByName('CustomField', fieldName, sObjectName, function(success) {
+    let options = this.createFieldOptions(cmd);
+    let { fieldName, sObjectName } = options;
+    ftClient.queryByName('CustomField', fieldName, sObjectName, function(success) {
           addSuccess(success);
-          fieldMeta = new  forceTooling.CustomFields.CustomField(arrSplit[1], arrSplit[2], dataType, null, arrSplit[4], parseInt(leftDecimals),parseInt(rightDecimals),null);
-
+          field = new  forceTooling.CustomFields.CustomField(...options);
           ftClient.update('CustomField', fieldMeta,
             function(success) {
               console.log(success);
@@ -76,27 +47,33 @@ class Field extends Command {
           {
             addError(error.responseJSON);
           });
-
-
-      }
   }
 
   createField(cmd) {
     let options = this.createFieldOptions(cmd);
     let field = forceTooling.CustomFields.CustomField(...options);
-    ftClient.setSessionToken(getCookie('sid'), SFAPI_VERSION, serverInstance + '');
+    let sfapi = this.store.get('SFAPI_VERSION');
+    let url = getServerURL();
+    let sid = getCookie('sid');
+    ftClient.setSessionToken(sid, SFAPI_VERSION, `${url} `);
     ftClient.create('CustomField', field,
       function(success) {
         console.log(success);
-        hideLoadingIndicator();
-        addSuccess(success);
+        this.createOutcomeMsg([], {
+          name: 'success',
+          title: 'Success! Field created!'
+        });
       },
       function(error) {
         console.log(error);
-        hideLoadingIndicator();
-        addError(error.responseJSON);
+        this.createOutcomeMsg([error.responseJSON], {
+          name: 'error',
+          title: 'Error!'
+        });
       });
   }
+  // hideLoadingIndicator();
+  // need to come to loader in responses..
 
 
   createFieldOptions(cmd) {
@@ -133,8 +110,6 @@ class Field extends Command {
       }
     });
     return Object.values(valHash);
-  }
-
   }
 }
 

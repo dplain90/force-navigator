@@ -4,8 +4,6 @@ import * as SessionUtil from './util/session_util.js';
 import * as Parser from './helpers/parser.js';
 let s = new Store();
 
-this.ice = s;
-
 export const store = s;
 export const main = () => {
   let app = new App();

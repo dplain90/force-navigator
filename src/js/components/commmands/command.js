@@ -4,30 +4,25 @@ class Command {
   constructor(results) {
     this.errorEl = errorEl;
     this.results = results;
+    this.outcomeMsg = this.outcomeMsg.bind(this);
+    this.createMsgDOM = this.createMsgDOM.bind(this);
   }
 
-  createErrorDOM(err, txt) {
-    err.appendChild(document.createTextNode(txt));
-    err.appendChild(document.createElement('br'));
+  createMsgDOM(el, txt) {
+    el.appendChild(document.createTextNode(txt));
+    el.appendChild(document.createElement('br'));
   }
 
-  addError(txt)
-  {
-    this.result.clearOutput();
-    let err = document.createElement("div");
-    err.className = 'sfnav_child sfnav-error-wrapper';
-    this.createErrorDOM(err, 'Error! ');
-    txt.forEach((e) => (this.createErrorDOM(err, e.message)), this);
-    /*
-       var ta = document.createElement('textarea');
-       ta.className = 'sfnav-error-textarea';
-       ta.value = JSON.stringify(text, null, 4);
-
-       err.appendChild(ta);
-     */
-    this.results.addEl(err);
-    let mainNav = document.getElementById("sfnav_shadow");
-    this.results.setVisible("visible", mainNav);
+  outcomeMsg(txt, type){
+      this.results.clearOutput();
+      let el = document.createElement("div");
+      el.className = `sfnav_child sfnav-${type.name}-wrapper`;
+      this.createMsgDOM(el, type.title);
+      txt.forEach((e) => (el = this.createMsgDOM(el, e.message)), this);
+      this.results.addEl(err);
+      let mainNav = document.getElementById("sfnav_shadow");
+      this.results.setVisible("visible", mainNav);
   }
+
 }
 export default Command;
