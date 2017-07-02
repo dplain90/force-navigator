@@ -1,12 +1,21 @@
 class DOMElement {
   constructor(selector){
     this.el = document.querySelector(selector);
-    this.hidden = this.hidden.bind(this);
-    this.show = this.show.bind(this);
-    this.val = this.val.bind(this);
-    this.clear = this.clear.bind(this);
+    bindAll(['hidden', 'show', 'val', 'clear', 'style']);
   }
 
+  style(attr, val){
+    this.el.style[attr] = val;
+  }
+
+  addClass(val){
+    this.el.classList.add(val);
+  }
+
+  removeClass(val){
+    this.el.classList.remove(val);
+  }
+  
   clear() {
     this.el.innerHTML = '';
     this.el.value = '';

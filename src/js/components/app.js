@@ -14,6 +14,7 @@ class App {
   constructor() {
     this.Mousetrap = Mouse;
     this.store = store;
+    this.rootNode = new NodeBase(null);
     this.init = this.init.bind(this);
     this.setDefaultSession = SessionUtil.setDefaultSession;
     this.setupSearchBox = this.setupSearchBox.bind(this);
@@ -45,16 +46,17 @@ class App {
     this.setupSearchBox();
     let ftClient = new forceTooling.Client();
     let loader = new Loader();
-    this.resultContainer = new ResultContainer();
-    this.rootNode = new NodeBase(null);
-    this.store.add(['ft-cli', ftClient, 'loader', loader, 'results', this.resultContainer, 'root', this.rootNode]);
-    this.setDefaultSession();
-    loader.hide();
-    this.omnomnom = SessionUtil.getCookie('sid');
-    APIUtil.getAllData();
     this.nav = new Nav();
-    this.search = new Search(this.resultContainer, this.nav);
+    this.search = new Search(this.rootNode);
+    this.setDefaultSession();
+    APIUtil.getAllData();
     this.initShortcuts();
+
+
+    // this.store.add(['ft-cli', ftClient, 'loader', loader, 'results', this.resultContainer, 'root', this.rootNode]);
+    // loader.hide();
+    // this.omnomnom = SessionUtil.getCookie('sid');
+    // this.search = new Search(this.resultContainer, this.nav);
   }
 
   initShortcuts() {
@@ -109,15 +111,15 @@ class App {
 
     this.Mousetrap.bindGlobal('esc', this.escCallback);
 
-    this.Mousetrap.wrap(searchBar).bind('enter', this.kbdCommand);
+    this.Mousetrap.wrap(searchBar).bind('enter', this.search.handleSubmit);
 
     for (var i = 0; i < newTabKeys.length; i++) {
       this.Mousetrap.wrap(searchBar).bind(newTabKeys[i], this.kbdCommand);
     };
 
-    this.Mousetrap.wrap(searchBar).bind('down', selectMove.bind(this, 'down'));
+    this.Mousetrap.wrap(searchBar).bind('down', this.search.handleSelect(1));
 
-    this.Mousetrap.wrap(searchBar).bind('up', selectMove.bind(this, 'up'));
+    this.Mousetrap.wrap(searchBar).bind('up', this.search.handleSelect(-1));
 
 
     this.Mousetrap.wrap(searchBar).bind('backspace', function(e) {

@@ -3,7 +3,7 @@ import { store } from '../../store/store.js';
 import { getServerURL } from '../../helpers/parser.js';
 import { getCookie } from '../../util/session_util.js';
 class Field extends Command {
-  constructor(){
+  constructor(cmd){
     super();
     this.store = store;
     this.errorEl = errorEl;
@@ -36,6 +36,8 @@ class Field extends Command {
         title: 'Success!'
       }
     };
+
+    this.createField(cmd);
   }
 
   updateField(cmd)
@@ -146,6 +148,12 @@ class Field extends Command {
       this.results.addEl(err);
       let mainNav = document.getElementById("sfnav_shadow");
       this.results.setVisible("visible", mainNav);
+  }
+
+  static validateField(nodes) {
+    let name = nodes[1].txt;
+    let params = nodes.slice(1);
+    return CUSTOM_FIELDS[name].length === params;
   }
 }
 

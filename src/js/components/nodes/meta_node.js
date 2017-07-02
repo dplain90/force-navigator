@@ -14,6 +14,10 @@ class MetaNode extends FileNode {
     this.urls = urls;
   }
 
+  isValid(params) {
+
+
+  }
 }
 
 export default MetaNode;

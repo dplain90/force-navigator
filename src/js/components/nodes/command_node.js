@@ -43,6 +43,23 @@ class CommandNode extends NodeBase {
   changeURL(url) {
     window.location.href = this.link;
   }
+
+  validCmd(params) {
+    let lastNode = params[params.length - 1];
+    let isValid = lastNode.link ? true : false;
+    return isValid;
+  }
+
+  select(){
+    this.domEl.addClass('sfnav_selected');
+  }
+
+  unselect(){
+    this.domEl.removeClass('sfnav_selected');
+  }
 }
 
 export default CommandNode;
+
+
+// custom field ... then

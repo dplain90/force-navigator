@@ -24,6 +24,11 @@ export const META_DATATYPES = {
   "URL": {name:"Url",code:"url"}
 };
 
+//
+// const validLength = (val) => {
+//   return val.typeof Integer;
+// }
+
 export const METADATA_KEYS = {
   'AUTONUMBER': [],
   'CHECKBOX': [],
@@ -50,6 +55,10 @@ export const METADATA_KEYS = {
   'TEXTAREALONG': ['length', 'visible'],
   'TEXTAREARICH': ['length', 'visible']
 };
+
+// So this is right, but the hash will have a fn embedded if relavent that is to be used in validation.....;
+
+
 
 export const fieldNullQty = (key, data) => {
   let { sObjectName, sObjectId, fieldName, dataType, plVal, arrSplit, typeLength } = data;
