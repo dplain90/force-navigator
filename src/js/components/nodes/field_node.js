@@ -1,4 +1,6 @@
 import CommandNode from './command_node.js';
+
+
 const METADATA_KEYS = {
   'AUTONUMBER': [],
   'CHECKBOX': [],
@@ -46,16 +48,7 @@ class FieldNode extends CommandNode {
   }
 
   static setupTree(rootNode) {
-    let rootField = new FieldNode('cf', rootNode, 'cmd');
-    Object.keys(METADATA_KEYS).forEach((key) => {
-      let nameNode = new FieldNode(key, rootField, 'static');
-      let links = METADATA_KEYS[key];
-      let lastLink = nameNode;
-      for (let i = 0; i < links.length; i++) {
-        let link = links[i];
-        lastLink = new FieldNode(link, lastLink, 'variable');
-      }
-    });
+    
   }
 
 }

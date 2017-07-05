@@ -1,20 +1,12 @@
 
-import DOMElement from '../dom_el.js';
+import DOMElement from './dom_el.js';
+import { bindAll } from '../../../helpers/binder.js';
 
 class SearchResult extends DOMElement {
   constructor(txt, link) {
-    super('');
+    super(null);
     this.txt = txt;
     this.link = link;
-    this.setup = this.setup.bind(this);
-    this.mouseHandler = this.mouseHandler.bind(this);
-    this.mouseHandlerOut = this.mouseHandlerOut.bind(this);
-    this.mouseClick = this.mouseClick.bind(this);
-    this.setListeners = this.setListeners.bind(this);
-    this.createEl = this.createEl.bind(this);
-    this.setId = this.setId.bind(this);
-    this.mouseClickLoginAs = this.mouseClickLoginAs.bind(this);
-
     this.createEl();
   }
 

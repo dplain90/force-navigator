@@ -16,8 +16,10 @@ class NodeBase {
   }
 
   getChain(result = []){
-    if(this.parent === null) return result;
-    this.parent.getChain(result.concat([this]);
+    if(this.parent === null) {
+      return result;
+    }
+    this.parent.getChain([this].concat(result));
   }
 }
 

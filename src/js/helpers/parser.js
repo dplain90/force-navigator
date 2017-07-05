@@ -1,5 +1,7 @@
 import { store } from '../main.js';
-import FileNode from './file_node.js';
+import FileNode from '../components/nodes/file_node.js';
+import CommandNode from '../components/nodes/command_node.js';
+import MetaNode from '../components/nodes/meta_node.js';
 let fileKeys = {};
 
 export const isSpace = (val) => {
@@ -14,36 +16,42 @@ export const lastWord = (words) => {
   return words.split(' ')[words.length - 1];
 }
 export const getServerURL = () => {
-  let url = window.location.href;
-  let regX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/;
-  let domain = u.match(regX)[1];
-  let invalidURL = true
-  ["salesforce.com", "cloudforce.com", "visual.force"].forEach((u) => {
-    if(domain.includes(u)) invalidURL = false;
-  });
+  let url = location.origin + "";
+  let urlParseArray = url.split(".");
+  let i;
+  let returnUrl;
 
-  if(invalidURL) return false;
-  return 'https://' + doman;
+  if(url.indexOf("salesforce") != -1)
+    {
+      returnUrl = url.substring(0, url.indexOf("salesforce")) + "salesforce.com";
+      return returnUrl;
+    }
+
+  if(url.indexOf("cloudforce") != -1)
+    {
+      returnUrl = url.substring(0, url.indexOf("cloudforce")) + "cloudforce.com";
+      return returnUrl;
+    }
+
+  if(url.indexOf("visual.force") != -1)
+    {
+      returnUrl = 'https://' + urlParseArray[1] + '';
+      return returnUrl;
+    }
+  return returnUrl;
 };
-
-export const parseComands = () => {
-  case 'refresh metadata':
-    let loader = store.get('loader');
-    loader.show();
-    APIUtil.getAllObjectMetadata();
-    break;
-  case 'setup':
-    window.location.href = serverInstance + '/ui/setup/Setup';
-    break;
-  default:
-    if(c.substring(0,3) === 'cf ') {
-      new Field(results, cmd);
-    } else if(c.substring(0,9) == 'login as ') {
-
-
-
-}
-
+// export const getServerURL = () => {
+//   let u = window.location.href;
+//   let regX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/;
+//   let domain = u.match(regX)[1];
+//   let invalidURL = true;
+//   ["salesforce.com", "cloudforce.com", "visual.force"].forEach((u) => {
+//     if(domain.includes(u)) invalidURL = false;
+//   });
+//
+//   if(invalidURL) return false;
+//   return 'https://' + domain;
+// };
 
 export const parseCustomFields = (data) => {
 
@@ -55,30 +63,37 @@ export const parseCustomFields = (data) => {
 export const parseMetaData = (data) => {
     if(data.length == 0) return;
     let metadata = JSON.parse(data);
-
-    let listParent = new CommandNode("List", root, new Command());
-    let newParent = new CommandNode("New", root, new Command());
-
+    let root = store.get('root');
+    let listParent = new CommandNode("List", root);
+    let newParent = new CommandNode("New", root);
+    root.addChild(listParent);
+    root.addChild(newParent);
     metadata.sobjects.map( obj => {
       if(obj.keyPrefix != null) {
         let metaLink =  `${getServerURL()}/` + obj.keyPrefix;
-        metaRoot.eachChild((parent) => {
+        [listParent, newParent].forEach((parent) => {
+
           let child = new MetaNode(obj, parent, metaLink);
           parent.addChild(child);
-          fileKey[child.txt] = child;
-        }
+          fileKeys[child.txt] = child;
+        });
       }
-    };
+    });
+
   };
 
 export const parseCustomObjectTree = (html) => {
-  let rootNode = FileNode("Setup > Custom Object", "", null);
+  let root = store.get('root');
+  let rootNode = CommandNode("co", root);
   $(html).find('th a').each(function(el) {
     createChildNode(this, rootNode);
   });
 };
 
 const createChildNode = (el, parent, selector) => {
+  console.log(el);
+  console.log(parent);
+  console.log(selector);
   el = selector ? el.querySelector(selector) : el;
   let txt = el.querySelector(selector).innerText;
   let link = el.querySelector(selector).getAttribute("href");
@@ -101,9 +116,9 @@ const parseBranch = (el, parent) => {
   }
 };
 
-const parseTree = (html) => {
+export const parseTree = (html) => {
   let root = html.getElementById("AutoNumber5");
-  let rootNode = new CommandNode("", root, new Command());
+  let rootNode = store.get('root');
   let rootChildren = root.children;
   for (let i = 0; i < rootChildren.length; i++) {
     let child = rootChildren[i];

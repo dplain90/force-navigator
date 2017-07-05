@@ -10,8 +10,8 @@ export const httpGet =  (url, callback) =>
   let sid = "Bearer " + getCookie('sid');
   xhr.open("GET", url, true);
   xhr.setRequestHeader("Authorization", sid);
-  xhr.onload = function(response) {
-    callback(response);
+  xhr.onload = function() {
+    callback(this.response);
   }
   req.send();
 };
@@ -27,15 +27,17 @@ export const getMetaData = (callback) => {
   let xhr = new XMLHttpRequest();
   xhr.open("GET", url, true);
   xhr.setRequestHeader("Authorization", sid);
-  xhr.onload = (response) => {
-    callback(response.target.responseText);
-    getSetupTree();
+  xhr.onload = function() {
+
+
+    callback(this.response);
+    // getSetupTree(root);
     // wonder if this should be currentTarget ?
-  }
+  };
   xhr.send();
 };
 
-export const getAllMetaData = () => {
+export const getAllMetaData = (root) => {
   let omnomnom = getCookie('sid');
   let clientId = omnomnom.split('!')[0];
   let hash = clientId + '!' + omnomnom.substring(omnomnom.length - 10, omnomnom.length);
@@ -47,7 +49,7 @@ export const getAllMetaData = () => {
     function(response) {
       let cmds = response;
       let metaData;
-      if(cmds == null || cmds.length == 0) {
+      if(cmds == null || cmds.length === 0) {
         cmds = {};
         metaData = {};
         getMetaData(Parse.parseMetaData);
@@ -71,14 +73,13 @@ export const getCustomObjects = () =>
   xhr.send();
 };
 
-export const getSetupTree = () => {
-  let loader = store.get('loader');
+export const getSetupTree = (root) => {
   let url = serverUrl('/ui/setup/Setup');
   let xhr = new XMLHttpRequest();
+  xhr.rootNode = root;
   xhr.onload = function() {
     Parse.parseTree(this.response);
-    getCustomObjects();
-    loader.hide();
+    // getCustomObjects();
   }
   xhr.open("GET", url);
   xhr.responseType = 'document';
@@ -87,7 +88,7 @@ export const getSetupTree = () => {
 };
 
 export const login = (id) => {
-  xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE ) {
       document.write(xhr.responseText );
@@ -103,5 +104,4 @@ export const login = (id) => {
 
 export const getAllData = () => {
   getAllMetaData();
-
-}
+};

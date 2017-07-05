@@ -1,6 +1,4 @@
-export const bindAll = (functions) => {
-  for (let i = 0; i < functions.length; i++) {
-    let fnName = functions[i];
-    this[fnName] = this[fnName].bind(this);
-  }
+export const bindAll = (ctx) => {
+  let fns = Object.getOwnPropertyNames(Object.getPrototypeOf(ctx));
+  fns.slice(1).forEach((fn) => ctx[fn] = ctx[fn].bind(ctx));
 };

@@ -15,11 +15,10 @@ export const getCookie = (c_name) =>
     }
 };
 
-export const setDefaultSession = () => {
-  let version = store.get('SFAPI_VERSION');
+export const setDefaultSession = (ftClient) => {
+  let version = 'v33.0';
   let sid = getCookie('sid');
   let url = getServerURL() + '';
-  let ftClient = store.get('ft-cli');
   ftClient.setSessionToken(sid, version, url);
 };
 

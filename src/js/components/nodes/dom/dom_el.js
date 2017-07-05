@@ -1,7 +1,9 @@
+import { bindAll } from  '../../../helpers/binder.js';
+
 class DOMElement {
   constructor(selector){
-    this.el = document.querySelector(selector);
-    bindAll(['hidden', 'show', 'val', 'clear', 'style']);
+    if(selector) this.el = document.querySelector(selector);
+    bindAll(this, ['hide', 'show', 'val', 'clear', 'style']);
   }
 
   style(attr, val){

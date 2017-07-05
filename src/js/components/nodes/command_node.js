@@ -1,5 +1,5 @@
-import SearchResult from '../search/search_result.js';
-
+import NodeBase from './node_base.js';
+import SearchResult from './dom/search_result.js';
 class CommandNode extends NodeBase {
   constructor(txt, parent) {
     super(parent);
@@ -8,7 +8,6 @@ class CommandNode extends NodeBase {
     this.cmd = 'changeURL';
     this.execute = this.execute.bind(this);
     this.changeURL = this.changeURL.bind(this);
-    this.openTab = this.openTab.bind(this);
     this.completeMatch = this.completeMatch.bind(this);
     this.doppelganger = this.doppelganger.bind(this);
     this.matches = this.matches.bind(this);
@@ -57,14 +56,8 @@ class CommandNode extends NodeBase {
     return this.completeMatch(this.txt.slice(0, val.length), val);
   }
 
-  openTab(){
-    let tab = window.open(this.link, '_newtab');
-    tab.blur();
-    window.focus();
-  }
-
-  changeURL(url) {
-    window.location.href = this.link;
+  changeURL(inTab) {
+    inTab ? this.openTab() : window.location.href = this.link;
   }
 
   isValid(params) {
@@ -80,6 +73,7 @@ class CommandNode extends NodeBase {
   unselect(){
     this.dom.removeClass('sfnav_selected');
   }
+
 }
 
 export default CommandNode;

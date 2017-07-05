@@ -1,9 +1,8 @@
-
-import SearchResults from './search_result.js';
-import Nav from '../nav.js';
 import { store } from '../../main.js';
 import { isSpace, lastWord, empty } from '../../helpers/parser.js';
 import { bindAll } from '../../helpers/binder.js';
+import DOMElement from '../nodes/dom/dom_el.js';
+import FileNode from '../nodes/file_node.js';
 class Search {
   constructor(rootNode) {
     this.cmdStack = [];
@@ -13,7 +12,7 @@ class Search {
     this.resultDOM = new DOMElement("#sfnav_output");
     this.searchDOM = new DOMElement("#sfnav_quickSearch");
     this.boxDOM = new DOMElement("#sfnav_search_box");
-    bindAll(['lastNode', 'validCmd', 'addCmd', 'setResults', 'command', 'params', 'searchVal', 'exactMatch', 'resetResults', 'clearResults', 'setSearchStyle', 'handleChange', 'executeCmd', 'handleSubmit']);
+    bindAll(this);
   }
 
   lastNode(){
@@ -50,6 +49,9 @@ class Search {
     this.cmdStack = [];
   }
 
+  show(){
+    this.searchDOM.show();
+  }
 
   command(){
     return this.cmdStack[this.cmdStack.length - 1];
@@ -100,6 +102,10 @@ class Search {
     this.executeCmd();
   }
 
+  handleTabSubmit(e){
+    let { validCmd, executeCmd, lastNode, setSearchStyle } = this;
+    validCmd() ? executeCmd() : setSearchStyle();
+  }
 
   handleSubmit(e){
     let { validCmd, executeCmd, lastNode, setSearchStyle } = this;
@@ -109,7 +115,6 @@ class Search {
   nextSelection(dir) {
     return this.results[this.selection + dir];
   }
-
 
   handleEsc(e){
     this.hide();

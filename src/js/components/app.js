@@ -2,27 +2,77 @@
 import { store } from '../main.js';
 import * as APIUtil  from '../util/api_util.js';
 import * as SessionUtil from '../util/session_util.js';
-import ResultContainer from './search/result_container.js';
 import Search from './search/search.js';
-import Nav from './nav.js';
 import { Mouse } from './mouse_trap.js';
-import Loader from './loader.js';
+import { eachKey } from '../helpers/iterator.js';
 import forceTooling from '../forceTooling.js';
 import NodeBase from './nodes/node_base.js';
+import LoginNode from './nodes/login_node.js';
+import FieldNode from './nodes/file_node.js'
+import DOMElement from './nodes/dom/dom_el.js';
+
+const METADATA_KEYS = {
+  'AUTONUMBER': [],
+  'CHECKBOX': [],
+  'CURRENCY': [],
+  'DATE': [],
+  'DATETIME': [],
+  'EMAIL': [],
+  'PHONE': [],
+  'PICKLIST': [],
+  'PICKLISTMS': [],
+  'URL': [],
+  'CURRENCY': ['scale','precision'],
+  'FORMULA': null, // was empty
+  'GEOLOCATION': ['scale'],
+  'HIERARCHICALRELATIONSHIP': null, // was empty
+  'LOOKUP': ['lookupObj'],
+  'MASTERDETAIL': null, // was empty
+  'NUMBER': ['scale', 'precision'],
+  'PERCENT': ['scale', 'precision'],
+  'ROLLUPSUMMARY': null, // was empty
+  'TEXT': ['length'],
+  'TEXTENCRYPTED': null, // was empty
+  'TEXTAREA': ['length'],
+  'TEXTAREALONG': ['length', 'visible'],
+  'TEXTAREARICH': ['length', 'visible']
+};
 
 class App {
   constructor() {
     this.Mousetrap = Mouse;
     this.store = store;
-    this.rootNode = new NodeBase(null);
+    //
     this.init = this.init.bind(this);
     this.setDefaultSession = SessionUtil.setDefaultSession;
     this.setupSearchBox = this.setupSearchBox.bind(this);
-    this.kbdCommand = this.kbdCommand.bind(this);
     this.initShortcuts = this.initShortcuts.bind(this);
-    this.bindShortcut = this.bindShortcut.bind(this);
-    this.escCallback = this.escCallback.bind(this);
-    // if(this.serverURL && sid && !invalidCkie) this.init();
+    this.bindShortcuts = this.bindShortcuts.bind(this);
+    this.wrapShortcuts = this.wrapShortcuts.bind(this);
+    this.setShortcut = this.setShortcut.bind(this);
+    this.newShortcut = this.newShortcut.bind(this);
+    this.setupResultTree = this.setupResultTree.bind(this);
+    this.rootNode = new NodeBase(null);
+    this.store.add('root', this.rootNode);
+    this.setupSearchBox();
+    //
+    this.nav = new DOMElement("sfnav_shadow");
+    this.search = new Search(this.rootNode);
+    this.wraps = {
+      'enter': this.search.handleSelect(1),
+      'down': this.search.handleSelect(-1),
+      'backspace': function() { console.log('backspace') },
+      'enter': this.search.handleSubmit,
+      'ctrl+enter': this.search.handleSubmit,
+      'command+enter': this.search.handleSubmit,
+      'shift+enter': this.search.handleSubmit
+    };
+
+
+    this.globals = {
+      'open': ['shift+space', this.search.show],
+      'close': ['esc', this.search.hide]
+    };
   }
 
   setupSearchBox(){
@@ -43,103 +93,64 @@ class App {
   }
 
   init() {
-    this.setupSearchBox();
-    let ftClient = new forceTooling.Client();
-    let loader = new Loader();
-    this.nav = new DOMElement("sfnav_shadow");
-    this.search = new Search(this.rootNode);
-    this.setDefaultSession();
-    APIUtil.getAllData();
-    this.initShortcuts();
-
-
+    this.ftClient = new forceTooling.Client();
+    this.setDefaultSession(this.ftClient);
+    this.setupResultTree();
+    // this.initShortcuts();
     // this.store.add(['ft-cli', ftClient, 'loader', loader, 'results', this.resultContainer, 'root', this.rootNode]);
     // loader.hide();
-    // this.omnomnom = SessionUtil.getCookie('sid');
     // this.search = new Search(this.resultContainer, this.nav);
   }
 
+  setupResultTree() {
+
+    APIUtil.getAllData(this.rootNode);
+    let LoginRoot = new LoginNode('login', this.rootNode, 'cmd');
+    let username = new LoginNode('', LoginRoot, 'variable');
+    let rootField = new FieldNode('cf', this.rootNode, 'cmd');
+    Object.keys(METADATA_KEYS).forEach((key) => {
+      let nameNode = new FieldNode(key, rootField, 'static');
+      let links = METADATA_KEYS[key];
+      let lastLink = nameNode;
+      if(links) {
+        for (let i = 0; i < links.length; i++) {
+          let link = links[i];
+          lastLink = new FieldNode(link, lastLink, 'variable');
+        }
+      }
+    });
+  }
+
+  newShortcut(shortcut){
+    return this.globals['open'][0] !== shortcut;
+  }
+
+  setShortcut(shortcut) {
+    this.globals['open'] = [shortcut, this.globals['open'][1]];
+  }
+
   initShortcuts() {
-    let bindShortcut = this.bindShortcut;
-
-    chrome.extension.sendMessage({'action':'Get Settings'},
-      function(response) {
-        bindShortcut(response['shortcut']);
-      }
-    );
-
-    // chrome.storage.local.get('settings', function(results) {
-    //     if(typeof results.settings.shortcut === 'undefined')
-    //     {
-    //         shortcut = 'shift+space';
-    //         bindShortcut(shortcut);
-    //     }
-    //     else
-    //     {
-    //         bindShortcut(results.settings.shortcut);
-    //     }
-    // });
-  }
-
-  bindShortcut(shortcut) {
-    if(!shortcut) shortcut = 'shift+space';
-    let search = this.search;
-    let searchBar = search.domEl;
-    let nav = this.nav;
-
-    let store = this.store;
-    let newTabKeys = [
-      "ctrl+enter",
-      "command+enter",
-      "shift+enter"
-    ];
-    let selectMove = this.resultContainer.selectMove;
-    this.Mousetrap.bindGlobal(shortcut, function(e) {
-      search.setVisibility('visible');
-      return false;
-    });
-
-    this.Mousetrap.bindGlobal('esc', this.search.handleEsc);
-
-    this.Mousetrap.wrap(searchBar).bind('enter', this.search.handleSubmit);
-
-    for (var i = 0; i < newTabKeys.length; i++) {
-      this.Mousetrap.wrap(searchBar).bind(newTabKeys[i], this.kbdCommand);
+    let msg = {'action':'Get Settings'};
+    let callback = (response) => { this.bindShortcuts(response['shortcut']);
     };
+    chrome.extension.sendMessage(msg, callback);
+  }
 
-    this.Mousetrap.wrap(searchBar).bind('down', this.search.handleSelect(1));
-
-    this.Mousetrap.wrap(searchBar).bind('up', this.search.handleSelect(-1));
-
-
-    this.Mousetrap.wrap(searchBar).bind('backspace', function(e) {
-      store.update('posi', -1);
-      store.update('oldins', -1);
+  wrapShortcuts(openCmd){
+    if(openCmd && this.newShortcut(openCmd)) this.setShortcut(openCmd);
+    let searchBar = this.search.searchDOM.el;
+    eachKey(this.wraps, this, (key) => {
+      this.Mousetrap.wrap(searchBar).bind(key, this.wraps[key]);
     });
   }
 
-  kbdCommand(e, key) {
-    let position = this.store.get('posi');
-    let newText = '';
-    let origText = this.search.domEl.value;
-    let results = this.resultContainer.domEl;
-    let newTabKeys = this.store.get('new_tab_keys');
-    if(position < 0) position = 0;
-
-    if(typeof results.childNodes[position] != 'undefined')
-      {
-        newText = results.childNodes[position].firstChild.nodeValue;
-      }
-
-    let newtab = newTabKeys.indexOf(key) >= 0 ? true : false;
-    if(!newtab){
-      this.resultContainer.clearOutput();
-      this.nav.setVisible("hidden");
-    }
-
-    if(!invokeCommand(newText, newtab, e, this.resultContainer)) {
-      invokeCommand(origText, newtab, e, this.resultContainer);
-    }
+  bindShortcuts() {
+    this.wrapShortcuts();
+    eachKey(this.globals, this, (key) => {
+      let shortcut = this.globals[key][0];
+      let callback = this.globals[key][1];
+      this.Mousetrap.bindGlobal(shortcut, callback);
+    });
   }
 }
 

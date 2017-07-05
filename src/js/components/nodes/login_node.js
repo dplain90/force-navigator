@@ -1,4 +1,5 @@
 import CommandNode from './command_node.js';
+import Login from '../commmands/login.js';
 
 class LoginNode extends CommandNode {
   constructor(txt, parent, type){
@@ -18,7 +19,7 @@ class LoginNode extends CommandNode {
   isValid(params){
     let login = new Login();
     let { errors, id, results } = login.attempt(params[1]);
-    if(errors) 
+    
   }
 
   findMatches(val){
@@ -34,8 +35,9 @@ class LoginNode extends CommandNode {
     let LoginRoot = new LoginNode('login', rootNode, 'cmd');
     let username = new LoginNode('', LoginRoot, 'variable');
   }
-
-
 }
 
 export default LoginNode;
+
+//  login setupTree
+//  fieldNode setupTree

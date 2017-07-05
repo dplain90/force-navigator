@@ -37,12 +37,8 @@ class Store {
     this.add(k,v);
   }
 
-  add(...objs) {
-    for (let i = 0; i < objs.length - 1; i+2) {
-       let k = objs[i];
-       let v = objs[i+1];
-       this.data[k] = v;
-    }
+  add(k, v) {
+    this.data[k] = v;
   }
 
   remove(k) {
