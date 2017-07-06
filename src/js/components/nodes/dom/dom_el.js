@@ -3,7 +3,7 @@ import { bindAll } from  '../../../helpers/binder.js';
 class DOMElement {
   constructor(selector){
     if(selector) this.el = document.querySelector(selector);
-    bindAll(this, ['hide', 'show', 'val', 'clear', 'style']);
+    bindAll(this, ['hide', 'show', 'val', 'clear', 'style', 'visible']);
   }
 
   style(attr, val){
@@ -27,6 +27,10 @@ class DOMElement {
     this.el.value = '';
   }
 
+  visible() {
+    return this.el.style.visibility === 'visible';
+  }
+
   hide() {
     this.el.style.position = 'relative';
     this.el.style.visibility = 'hidden';
@@ -38,7 +42,8 @@ class DOMElement {
     this.el.style.visibility = 'visible';
   }
 
-  val() {
+  val(value) {
+    if(value) this.el.value = value;
     return this.el.value;
   }
 

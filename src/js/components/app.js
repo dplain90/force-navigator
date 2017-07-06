@@ -54,6 +54,7 @@ class App {
     this.setupResultTree = this.setupResultTree.bind(this);
     this.rootNode = new NodeBase(null);
     this.store.add('root', this.rootNode);
+
     this.setupSearchBox();
     //
     this.nav = new DOMElement("sfnav_shadow");
@@ -96,7 +97,7 @@ class App {
     this.ftClient = new forceTooling.Client();
     this.setDefaultSession(this.ftClient);
     this.setupResultTree();
-    // this.initShortcuts();
+    this.initShortcuts();
     // this.store.add(['ft-cli', ftClient, 'loader', loader, 'results', this.resultContainer, 'root', this.rootNode]);
     // loader.hide();
     // this.search = new Search(this.resultContainer, this.nav);
@@ -108,6 +109,9 @@ class App {
     let LoginRoot = new LoginNode('login', this.rootNode, 'cmd');
     let username = new LoginNode('', LoginRoot, 'variable');
     let rootField = new FieldNode('cf', this.rootNode, 'cmd');
+    this.rootNode.addChild(LoginRoot);
+    this.rootNode.addChild(rootField);
+
     Object.keys(METADATA_KEYS).forEach((key) => {
       let nameNode = new FieldNode(key, rootField, 'static');
       let links = METADATA_KEYS[key];
@@ -119,6 +123,7 @@ class App {
         }
       }
     });
+
   }
 
   newShortcut(shortcut){
@@ -153,5 +158,6 @@ class App {
     });
   }
 }
+
 
 export default App;

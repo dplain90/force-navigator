@@ -1,18 +1,26 @@
 import { store } from '../../main.js';
-import { isSpace, lastWord, empty } from '../../helpers/parser.js';
+import * as Parser from '../../helpers/parser.js';
+// { isSpace, lastWord, empty }
 import { bindAll } from '../../helpers/binder.js';
 import DOMElement from '../nodes/dom/dom_el.js';
 import FileNode from '../nodes/file_node.js';
 class Search {
   constructor(rootNode) {
-    this.cmdStack = [];
+    this.cmdStack = [rootNode];
     this.root = rootNode;
     this.results = rootNode.children;
+    this.isSpace = Parser.isSpace;
+    this.lastWord = Parser.lastWord;
+    this.empty = Parser.empty;
     this.invalid = false;
+    bindAll(this);
     this.resultDOM = new DOMElement("#sfnav_output");
     this.searchDOM = new DOMElement("#sfnav_quickSearch");
+    this.searchDOM.el.oninput = this.handleChange;
+    this.searchDOM.style('color', 'black');
     this.boxDOM = new DOMElement("#sfnav_search_box");
-    bindAll(this);
+    this.loader = document.getElementById('sfnav_loader');
+    this.logo = document.getElementById('sfnav_logo');
   }
 
   lastNode(){
@@ -25,7 +33,7 @@ class Search {
 
   addCmd(word){
     for (let i = 0; i < this.results.length; i++) {
-      let node = this.results[i]
+      let node = this.results[i];
       if(this.exactMatch(node, word)) {
         this.cmdStack.push(node);
         this.clearResults();
@@ -38,19 +46,30 @@ class Search {
   setResults(val){
     let { setSearchStyle, lastNode, addCmd, results } = this;
     setSearchStyle(true);
+    let word = this.lastWord(val);
     let lastCmd = lastNode();
-    let word = lastWord(val);
-    val.isSpace() ? addCmd(word) : results = lastCmd.findMatches(word, this.resultDOM, this.handleClick);
+    if(this.isSpace(val)) {
+      addCmd(val.split(" ").slice(-2,1)[0])
+    } else {
+      this.results = lastCmd.findMatches(word, this.resultDOM.el, this.handleClick);
+      this.resultDOM.show();
+    }
+    console.log(this.results);
   }
 
   hide(){
     this.resetResults();
+    this.logo.style.visibility = 'hidden';
     this.searchDOM.hide();
     this.cmdStack = [];
   }
 
   show(){
+    debugger
     this.searchDOM.show();
+    this.logo.style.visibility = 'visibile';
+    this.logo.style.background = 'white';
+    this.loader.style.width = '0px'
   }
 
   command(){
@@ -60,8 +79,8 @@ class Search {
   params(){
     return this.cmdStack.slice(1);
   }
-  searchVal(){
-    return this.searchDOM.val();
+  searchVal(value){
+    return this.searchDOM.val(value);
   }
 
   exactMatch(node, word){
@@ -71,6 +90,7 @@ class Search {
   resetResults(){
     this.resultDOM.hide();
     this.results = this.root.children;
+    this.resultDOM.show();
   }
 
   clearResults(){
@@ -88,8 +108,8 @@ class Search {
 
   handleChange(e){
     let { resetResults, searchVal, setResults } = this;
-    let val = searchVal();
-    empty(val) ? resetResults() : setResults(lastWord(val));
+    let val = e.currentTarget.value;
+    this.empty(val) ? resetResults() : setResults(val);
   }
 
   executeCmd(node){

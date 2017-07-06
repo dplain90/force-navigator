@@ -5,6 +5,7 @@ class FileNode extends CommandNode {
     super(txt, parent);
     bindAll(this, []);
     this.link = link;
+    this.dom.el.setAttribute("href", this.link);
     if(parent.parent !== null ) {
       this.path = `${parent.path} > ${this.txt}`;
     } else {

@@ -2,6 +2,23 @@ import { store } from '../main.js';
 import FileNode from '../components/nodes/file_node.js';
 import CommandNode from '../components/nodes/command_node.js';
 import MetaNode from '../components/nodes/meta_node.js';
+
+const tree = class Tree {
+  constructor(){
+    this.fileKeys = {};
+    this.nodes = [];
+    this.addNode = this.addNode.bind(this);
+  }
+
+  addNode(node){
+    node.id = this.nodes.length;
+    this.fileKeys[node.txt] = node.id;
+    this.nodes.push(node);
+  }
+}
+
+const cmdTree = new tree();
+
 let fileKeys = {};
 
 export const isSpace = (val) => {
@@ -13,7 +30,8 @@ export const empty = (val) => {
 }
 
 export const lastWord = (words) => {
-  return words.split(' ')[words.length - 1];
+  let wordArr = words.split(' ');
+  return wordArr[wordArr.length - 1];
 }
 export const getServerURL = () => {
   let url = location.origin + "";
@@ -74,8 +92,8 @@ export const parseMetaData = (data) => {
         [listParent, newParent].forEach((parent) => {
 
           let child = new MetaNode(obj, parent, metaLink);
+          cmdTree.addNode(child);
           parent.addChild(child);
-          fileKeys[child.txt] = child;
         });
       }
     });
@@ -84,22 +102,25 @@ export const parseMetaData = (data) => {
 
 export const parseCustomObjectTree = (html) => {
   let root = store.get('root');
-  let rootNode = CommandNode("co", root);
+  let rootNode = new CommandNode("co", root);
+  root.addChild(rootNode);
   $(html).find('th a').each(function(el) {
     createChildNode(this, rootNode);
   });
+  store.add('cmd-tree', cmdTree);
+  console.log(cmdTree);
 };
 
 const createChildNode = (el, parent, selector) => {
-  console.log(el);
-  console.log(parent);
-  console.log(selector);
   el = selector ? el.querySelector(selector) : el;
-  let txt = el.querySelector(selector).innerText;
-  let link = el.querySelector(selector).getAttribute("href");
+  let txt = el.innerText;
+  let link = el.getAttribute("href");
   let childNode = new FileNode(txt, link, parent);
-  fileKeys[txt] = childNode;
-  parent.addChild(childNode);
+  // childNode.id = nodes.length;
+  cmdTree.addNode(childNode);
+
+  // nodes.push(childNode);
+  parent.addChild(childNode.id);
   return childNode;
 };
 
@@ -117,6 +138,7 @@ const parseBranch = (el, parent) => {
 };
 
 export const parseTree = (html) => {
+
   let root = html.getElementById("AutoNumber5");
   let rootNode = store.get('root');
   let rootChildren = root.children;
@@ -131,8 +153,9 @@ export const parseTree = (html) => {
       parseBranch(child, parentNode);
     }
   }
-  console.log(fileKeys);
+
   store.add['fileTree'] = fileKeys;
+  console.log(rootNode);
 };
 
 // .setupNavtree

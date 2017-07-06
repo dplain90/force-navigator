@@ -31,7 +31,7 @@ export const getMetaData = (callback) => {
 
 
     callback(this.response);
-    // getSetupTree(root);
+    getSetupTree();
     // wonder if this should be currentTarget ?
   };
   xhr.send();
@@ -73,13 +73,14 @@ export const getCustomObjects = () =>
   xhr.send();
 };
 
-export const getSetupTree = (root) => {
+export const getSetupTree = () => {
   let url = serverUrl('/ui/setup/Setup');
   let xhr = new XMLHttpRequest();
-  xhr.rootNode = root;
+
+
   xhr.onload = function() {
     Parse.parseTree(this.response);
-    // getCustomObjects();
+    getCustomObjects();
   }
   xhr.open("GET", url);
   xhr.responseType = 'document';

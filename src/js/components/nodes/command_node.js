@@ -1,7 +1,7 @@
 import NodeBase from './node_base.js';
 import SearchResult from './dom/search_result.js';
 class CommandNode extends NodeBase {
-  constructor(txt, parent) {
+  constructor(txt, parent, link) {
     super(parent);
     this.txt = txt;
     this.link = window.location.href;
@@ -16,33 +16,6 @@ class CommandNode extends NodeBase {
 
   execute(params){
     this[this.cmd](...params);
-  }
-
-  findMatches(val, container, onClick){
-    let matches = [];
-    this.eachChild((child) => {
-      if(child.matches(val)) matches.push(child);
-    });
-    matches = this.sortMatches(matches);
-    this.addToDOM(matches, onClick);
-    return matches;
-  }
-
-  addToDOM(matches, onClick){
-    for (let i = 0; i < matches.length; i++) {
-      let resultDOM = matches[i].dom;
-      resultDOM.setId(`${i}`);
-      resultDOM.addResult(container, onClick);
-    }
-  }
-
-  sortMatches(matches){
-    let sorted = matches.sort(function(a, b) {
-        let aVal = a.txt.toUpperCase();
-        let bVal = b.txt.toUpperCase();
-        return (aVal < bVal) ? -1 : (aVal > bVal) ? 1 : 0;
-      });
-    return sorted;
   }
 
   completeMatch(txt, val){
